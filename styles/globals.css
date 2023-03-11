@@ -1,0 +1,19 @@
+/* ./styles/globals.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+[type="checkbox"],
+[type="radio"] {
+  height: 2rem;
+  width: 2rem;
+}
+
+@import url("https://fonts.googleapis.com/css2?family=Roboto&display=swap");
+
+html,
+body,
+#__next {
+  height: 100%;
+  font-family: "Montserrat", sans-serif;
+}

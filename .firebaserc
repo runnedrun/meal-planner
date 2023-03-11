@@ -1,0 +1,7 @@
+{
+  "projects": {
+    "default": "meal-planner-e0a35",
+    "staging": "meal-planner-e0a35",
+    "demo": "demo-xqchinese"
+  }
+}
