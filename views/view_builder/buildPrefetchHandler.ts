@@ -125,11 +125,11 @@ export const getBasicUserFromAuthUser = (authUser: AuthUser) => {
     ? authUser.firebaseUser?.isAnonymous
     : authUser?.claims?.provider_id === "anonymous"
   return {
-    id: authUser?.id,
+    id: authUser?.id || null,
     email: authUser?.email || null,
     isAnonymous,
     claims: getClaims(authUser),
-    clientInitialized: authUser.clientInitialized,
+    clientInitialized: authUser?.clientInitialized || null,
   } as BasicUser
 }
 
@@ -202,10 +202,9 @@ const prefetchDataWithAuthUser = <MapToResolve extends Record<any, any>>(
     console.log("starting request Id", renderId)
     const mapToResolve = mapToResolveFn(renderId)
     const allParamObs = getAllParamObsFromMap(mapToResolve)
-    const cachedParamObs = addCachingToAllObs(allParamObs)
 
-    const arrayOfParamObs = Object.values(cachedParamObs)
-    const allParamObsPaths = objKeys(cachedParamObs)
+    const arrayOfParamObs = Object.values(allParamObs)
+    const allParamObsPaths = objKeys(allParamObs)
     const allArgsForAllObs = getCurrentAgsMapForAllParams(arrayOfParamObs)
 
     const serverValues = {} as Record<ServerValueNames, any>
@@ -258,7 +257,7 @@ const prefetchDataWithAuthUser = <MapToResolve extends Record<any, any>>(
 
     await Promise.all(
       allParamObsPaths.map(async (path) => {
-        const obs = cachedParamObs[path]
+        const obs = allParamObs[path]
         obs.cacheBehaviorSubject.next(cache)
         const value = await obs.getWithArgs(processedArgs)
       })

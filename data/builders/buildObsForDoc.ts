@@ -37,13 +37,6 @@ export const buildObsForDoc = <
 ) => {
   const idObs = isObservable(id) ? id : of(id)
 
-  const rawCache = cache.cacheSubject.getValue()
-  const shouldNotLoadLiveData = rawCache["_noUpdates"]
-
-  if (shouldNotLoadLiveData) {
-    return of()
-  }
-
   return idObs.pipe(
     buildCachedSwitchMap(cache || buildNoOpCache(), (id) => {
       const db = init()

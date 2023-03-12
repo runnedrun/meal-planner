@@ -15,7 +15,7 @@ export const AdminPageLayout = ({
     <div className={"ml flex h-full w-full justify-center"}>
       <div className={"w-full"}>
         <div className="p-5">
-          <div className="text-3xl text-white">{title}</div>
+          <div className="text-3xl text-black">{title}</div>
           {backUrl && (
             <Box className="mt-3">
               <BackButton href={backUrl} />

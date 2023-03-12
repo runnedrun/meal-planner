@@ -1,5 +1,6 @@
 import * as firebase from "firebase-admin/app"
 import "./fixTsPaths"
+import { triggerPlanGen } from "./triggerPlanGen"
 
 // // Start writing Firebase Functions
 // // https://firebase.google.com/docs/functions/typescript
@@ -11,4 +12,4 @@ import "./fixTsPaths"
 
 firebase.initializeApp()
 
-export {}
+export { triggerPlanGen }

@@ -14,7 +14,7 @@
     "lint": "next lint",
     "build-functions": "WEBPACK_MODE='production' webpack",
     "use-demo": "source ./env_script/use-demo.sh",
-    "emulate": " firebase emulators:start --project meal_planner --import=./import_directory"
+    "emulate": " firebase emulators:start --project demo-mealplanner --import=./import_directory"
   },
   "dependencies": {
     "@babel/preset-modules": "^0.1.5",
@@ -37,6 +37,7 @@
     "@rehooks/component-size": "^1.0.3",
     "@tailwindcss/forms": "^0.5.3",
     "ancestors": "^0.0.3",
+    "array-normalize": "^2.0.0",
     "axios": "^1.2.2",
     "axios-retry": "^3.3.1",
     "base64-inline-loader": "^2.0.1",
@@ -100,6 +101,7 @@
     "style-loader": "^3.3.1",
     "tailwind-override": "^0.6.1",
     "tailwindcss": "^3.2.3",
+    "tree-model": "^1.0.7",
     "ts-keycode-enum": "^1.0.6",
     "url-loader": "^4.1.1",
     "use-deep-compare-effect": "^1.8.1",
@@ -115,7 +117,9 @@
     "@babel/preset-react": "latest",
     "@babel/preset-typescript": "^7.18.6",
     "@tailwindcss/typography": "^0.5.9",
+    "@types/array-normalize": "^2.0.0",
     "@types/jest": "^29.2.5",
+    "@types/lodash-es": "^4.17.6",
     "@types/module-alias": "^2.0.1",
     "@types/moment-timezone": "^0.5.30",
     "@types/papaparse": "^5.3.1",

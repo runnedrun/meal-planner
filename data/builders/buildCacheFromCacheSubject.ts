@@ -25,8 +25,6 @@ export const buildCacheFromCacheSubject = <ArgsType extends any>(
 
       const cachedData = get(cacheSubject.getValue(), key)
 
-      console.log("cacheSubject", name, key, cachedData)
-
       // cachedData && console.log("read from cache", key, cachedData)
 
       return cachedData
@@ -39,7 +37,6 @@ export const buildCacheFromCacheSubject = <ArgsType extends any>(
 
       const key = buildCacheKey(args)
       // console.log("setting in cache", key)
-      console.log("setting", name, key)
       set(cacheSubject.getValue(), key, value)
     },
     cacheSubject,

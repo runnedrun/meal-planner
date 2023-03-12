@@ -46,7 +46,6 @@ export const buildCachingForDataWithLoading =
 
         if (loadingAndArgsHaveChanged || alwaysReadFromCache) {
           const cachedData = cache.get(tranformedArgs)
-          console.log("achcae", cachedData)
           if (!isUndefined(cachedData)) {
             Object.assign(clonedDataWithLoading, {
               finalValue: cachedData,

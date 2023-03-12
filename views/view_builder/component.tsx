@@ -131,6 +131,7 @@ export function component<MapToResolve extends Record<any, any>>(
           : window.location.hostname,
         userId: basicUser?.id,
         user: basicUser,
+        serverValues: possiblePrefetchData.componentContext?.serverValues,
       } as ComponentContext
     }
 
@@ -203,10 +204,6 @@ export function component<MapToResolve extends Record<any, any>>(
         []
       )
 
-      console.log("data", dataCache)
-
-      dataCache._noUpdates = !isServerside()
-
       attachPrefetchCacheToAllObs(dataCache)
 
       const componentProps = getComponentPropsWithDefault(componentContext)
@@ -244,6 +241,8 @@ export function component<MapToResolve extends Record<any, any>>(
       attachPrefetchCacheToAllObs(prefetchDataCache)
 
       const componentProps = getComponentPropsWithDefault(componentContext)
+
+      console.log("data", componentProps, componentContext)
 
       return shouldHideComponent(componentProps) ? (
         <span></span>
