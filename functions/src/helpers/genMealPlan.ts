@@ -1,17 +1,11 @@
 import { Recipe } from "@/data/types/Recipe"
 import { isServerside } from "@/helpers/isServerside"
 import { deepCopy } from "@firebase/util"
-import { sum, sumBy } from "lodash-es"
+import { clone, sum, sumBy } from "lodash-es"
 import { BeamSearch } from "./BeamSearch"
 import { DayTags } from "./DayTags"
 import normalize from "array-normalize"
-
-type DayMeals = {
-  veg: Recipe
-  other: Recipe[]
-  score?: number
-  dayIndex?: number
-}
+import { DayMeals } from "@/data/types/MealPlan"
 
 const twentyFourHours = 24 * 60 * 60 * 1000
 
@@ -22,10 +16,8 @@ const generateAllPossibleDayMeals = (
   dayIndex: number
 ) => {
   const dayTags = DayTags[dayIndex]?.tags || []
-  console.log("genning for day", dayIndex, dayTags)
   const recipesWithRequiredTags = possibleRecipes.filter((recipe) => {
     const recipeHasAllTags = dayTags.every((tag) => recipe.tags?.includes(tag))
-    console.log("has it", recipeHasAllTags)
     return recipeHasAllTags
   })
   const vegRecipes = recipesWithRequiredTags.filter((_) => _.veg)
@@ -66,48 +58,53 @@ const getRecencyScoreForDayMeal = (
     getLastUsedForRecipe(_, recipeIdsToLastUsedMs)
   )
   const allLastUsedAts = [vegLastUsed, ...otherLastUsedAts]
+
+  const nonZeroLastUsed = allLastUsedAts.filter((_) => _)
+
+  // if (nonZeroLastUsed.length) {
+  //   console.log("last used?", nonZeroLastUsed)
+  // }
+
   const recencyScore = allLastUsedAts.reduce((acc, recipeLastUsed) => {
-    return acc + Math.exp(dayStartMs - recipeLastUsed)
-  })
-  return recencyScore
+    return acc + Math.log(dayStartMs - recipeLastUsed + 1)
+  }, 0)
+
+  return recencyScore / 10
 }
 
-const scoreDayMeals = (dayMeals: DayMeals[], weekStartMs: number) => {
+const scoreDayMeals = (
+  dayMeals: DayMeals[],
+  weekStartMs: number,
+  recipeIdsToLastUsedMs: Record<string, number>
+) => {
   // gen a map of all the last day used for the recipes in this meal plan
   // then use that map to get the last day used, the fall back to the one set or 0
 
-  const recipeIdsToLastUsedMs = dayMeals.reduce((acc, dayMeal) => {
-    const allRecipes = [dayMeal.veg, ...dayMeal.other]
-    allRecipes.map((recipe) => {
-      acc[recipe.uid] = weekStartMs + dayMeal.dayIndex * twentyFourHours
-    })
-    return acc
-  }, {} as Record<string, number>)
-
-  const cumXqScore = sumBy(
-    dayMeals,
-    (meals) =>
-      meals.veg.xqScore || 2.5 + sumBy(meals.other, (_) => _.xqScore || 2.5)
+  const xqScores = dayMeals.map((_) =>
+    sum([_.veg.xqScore || 2.5, ..._.other.map((__) => __.xqScore || 2.5)])
   )
-  const cumDgScore = sumBy(
-    dayMeals,
-    (meals) =>
-      meals.veg.dgScore || 2.5 + sumBy(meals.other, (_) => _.dgScore || 2.5)
+  const dgScores = dayMeals.map((_) =>
+    sum([_.veg.dgScore || 2.5, ..._.other.map((__) => __.dgScore || 2.5)])
   )
 
-  const avgRatingScore = (cumDgScore + cumXqScore) / dayMeals.length
-  const cumRecencyscore = sumBy(dayMeals, (meals) =>
+  const cumXqScore = sum(xqScores)
+  const cumDgScore = sum(dgScores)
+
+  const avgRatingScore = (cumDgScore + cumXqScore) / (dayMeals.length * 2)
+
+  const allRecencyScores = dayMeals.map((dayMeal) =>
     getRecencyScoreForDayMeal(
-      meals,
-      meals.dayIndex * twentyFourHours + weekStartMs,
+      dayMeal,
+      dayMeal.dayIndex * twentyFourHours + weekStartMs,
       recipeIdsToLastUsedMs
     )
   )
+  const cumRecencyScore = sum(allRecencyScores)
 
-  const averageRecencyScore = cumRecencyscore / dayMeals.length
+  const averageRecencyScore = cumRecencyScore / dayMeals.length
 
-  const scores = normalize([avgRatingScore, averageRecencyScore])
-  return sum(scores)
+  const scores = [avgRatingScore, averageRecencyScore]
+  return sum(scores) / scores.length
 }
 
 export const genIdealMealPlan = (
@@ -118,9 +115,15 @@ export const genIdealMealPlan = (
   const recipesClone = deepCopy(allPossibleRecipes)
   const beam = new BeamSearch({
     childrenGenerator: ({ path }: { path: DayMeals[] }) => {
-      const prevNode = path[path.length - 1]
-
       const currentDay = path.length
+
+      const recipeIdsToLastUsedMs = path.reduce((acc, dayMeal) => {
+        const allRecipes = [dayMeal.veg, ...dayMeal.other]
+        allRecipes.map((recipe) => {
+          acc[recipe.uid] = weekStartMs + dayMeal.dayIndex * twentyFourHours
+        })
+        return acc
+      }, {} as Record<string, number>)
 
       const allPossibleMeals = generateAllPossibleDayMeals(
         recipesClone,
@@ -131,16 +134,16 @@ export const genIdealMealPlan = (
         return console.error("NO MEALS AVAILABLE for day ", currentDay)
       }
 
-      console.log("allpos", allPossibleMeals.length)
-
       const newPaths = allPossibleMeals.map((meal) => {
         const newPath = [...path, meal]
-        const newScore = scoreDayMeals(newPath, weekStartMs)
+        const newScore = scoreDayMeals(
+          newPath,
+          weekStartMs,
+          recipeIdsToLastUsedMs
+        )
         meal.score = newScore
         return { path: newPath }
       })
-
-      console.log("new paths", newPaths.length, allPossibleMeals.length)
 
       return newPaths
     },
@@ -167,8 +170,6 @@ export const genIdealMealPlan = (
       ({ path: pathsA }, { path: pathsB }) =>
         pathsB[pathsB.length - 1].score! - pathsA[pathsA.length - 1].score!
     )
-
-  console.log("tpshats", paths)
 
   return paths[0].path
 }

@@ -40,11 +40,11 @@ export const testRecipes: Recipe[] = [
   },
   {
     uid: "6" as ForeignKey<"recipe">,
-    name: "test recipe 6 - fast",
+    name: "test recipe 6",
     xqScore: 0,
     lastUsedAt: null,
     veg: false,
-    tags: [RecipeTag.Fast],
+    tags: [],
   },
   {
     uid: "7" as ForeignKey<"recipe">,
@@ -55,11 +55,11 @@ export const testRecipes: Recipe[] = [
   },
   {
     uid: "8" as ForeignKey<"recipe">,
-    name: "test recipe 8 - fast",
+    name: "test recipe 8",
     xqScore: 0,
     lastUsedAt: null,
     veg: false,
-    tags: [RecipeTag.Fast],
+    tags: [],
   },
   {
     uid: "9" as ForeignKey<"recipe">,
@@ -73,7 +73,7 @@ export const testRecipes: Recipe[] = [
     uid: "10" as ForeignKey<"recipe">,
     name: "fast test recipe 10",
     xqScore: 0,
-    lastUsedAt: null,
+    lastUsedAt: Timestamp.fromMillis(10000000),
     tags: [RecipeTag.Fast],
     veg: true,
   },
@@ -83,14 +83,14 @@ export const testRecipes: Recipe[] = [
     xqScore: 0,
     lastUsedAt: null,
     tags: [RecipeTag.Fast],
-    veg: true,
+    veg: false,
   },
   {
     uid: "12" as ForeignKey<"recipe">,
     name: "test recipe 12",
     xqScore: 0,
     lastUsedAt: null,
-    tags: [RecipeTag.Fast],
+    tags: [],
     veg: true,
   },
   {
@@ -98,7 +98,7 @@ export const testRecipes: Recipe[] = [
     name: "test recipe 13",
     xqScore: 0,
     lastUsedAt: null,
-    tags: [RecipeTag.Fast],
+    tags: [],
     veg: true,
   },
   {

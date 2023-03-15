@@ -128,7 +128,7 @@ export const attachObs = <
           tap((parentCache) => {
             valueObsArray.map((obs) => {
               const currentChildCacheValue = obs.cacheBehaviorSubject.getValue()
-              Object.assign(parentCache, currentChildCacheValue)
+              Object.assign(parentCache || {}, currentChildCacheValue)
               obs.cacheBehaviorSubject.next(parentCache)
             })
           })
