@@ -3,8 +3,7 @@ import { Model } from "../baseTypes/Model"
 import { Recipe } from "./Recipe"
 
 export type DayMeals = {
-  veg: Recipe
-  other: Recipe[]
+  recipes: Recipe[]
   score?: number
   dayIndex?: number
 }

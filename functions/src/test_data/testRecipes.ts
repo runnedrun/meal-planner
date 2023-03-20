@@ -1,13 +1,14 @@
 import { ForeignKey } from "@/data/baseTypes/ForeignKey"
 import { Recipe, RecipeTag } from "@/data/types/Recipe"
 import { Timestamp } from "firebase/firestore"
+import { Ingredients as I } from "@/data/types/Ingredients"
 
 export const testRecipes: Recipe[] = [
   {
     uid: "1" as ForeignKey<"recipe">,
     name: "test recipe 1",
     xqScore: -1,
-    lastUsedAt: null,
+    ingredients: [I.chickenBroth, I.garlic, I.onion],
     veg: false,
   },
   {
@@ -15,7 +16,7 @@ export const testRecipes: Recipe[] = [
     name: "test recipe 2",
     xqScore: 0,
     lastUsedAt: Timestamp.fromMillis(700),
-    veg: false,
+    ingredients: [I.chickenBroth, I.garlic, I.onion],
   },
   {
     uid: "3" as ForeignKey<"recipe">,
@@ -23,6 +24,7 @@ export const testRecipes: Recipe[] = [
     xqScore: 0,
     lastUsedAt: Timestamp.fromMillis(800),
     veg: false,
+    ingredients: [I.chickenBroth, I.garlic, I.onion],
   },
   {
     uid: "4" as ForeignKey<"recipe">,
@@ -30,6 +32,7 @@ export const testRecipes: Recipe[] = [
     xqScore: 0,
     lastUsedAt: Timestamp.fromMillis(900),
     veg: false,
+    ingredients: [I.chickenBroth, I.garlic, I.onion],
   },
   {
     uid: "5" as ForeignKey<"recipe">,
@@ -37,6 +40,7 @@ export const testRecipes: Recipe[] = [
     xqScore: 0,
     lastUsedAt: Timestamp.fromMillis(100),
     veg: false,
+    ingredients: [I.chickenBroth, I.garlic, I.onion],
   },
   {
     uid: "6" as ForeignKey<"recipe">,
@@ -44,6 +48,7 @@ export const testRecipes: Recipe[] = [
     xqScore: 0,
     lastUsedAt: null,
     veg: false,
+    ingredients: [I.chickenBroth, I.garlic, I.onion],
     tags: [],
   },
   {
@@ -52,6 +57,7 @@ export const testRecipes: Recipe[] = [
     xqScore: 0,
     lastUsedAt: null,
     veg: false,
+    ingredients: [I.chickenBroth, I.garlic, I.onion],
   },
   {
     uid: "8" as ForeignKey<"recipe">,
@@ -59,6 +65,7 @@ export const testRecipes: Recipe[] = [
     xqScore: 0,
     lastUsedAt: null,
     veg: false,
+    ingredients: [I.chickenBroth, I.garlic, I.onion],
     tags: [],
   },
   {
@@ -67,6 +74,7 @@ export const testRecipes: Recipe[] = [
     xqScore: 0,
     lastUsedAt: null,
     veg: false,
+    ingredients: [I.chickenBroth, I.garlic, I.onion],
     tags: [RecipeTag.Fast],
   },
   {
@@ -76,6 +84,7 @@ export const testRecipes: Recipe[] = [
     lastUsedAt: Timestamp.fromMillis(10000000),
     tags: [RecipeTag.Fast],
     veg: true,
+    ingredients: [I.chickenBroth, I.garlic, I.onion],
   },
   {
     uid: "11" as ForeignKey<"recipe">,
@@ -84,6 +93,7 @@ export const testRecipes: Recipe[] = [
     lastUsedAt: null,
     tags: [RecipeTag.Fast],
     veg: false,
+    ingredients: [I.chickenBroth, I.garlic, I.onion],
   },
   {
     uid: "12" as ForeignKey<"recipe">,
@@ -92,6 +102,7 @@ export const testRecipes: Recipe[] = [
     lastUsedAt: null,
     tags: [],
     veg: true,
+    ingredients: [I.chickenBroth, I.garlic, I.onion],
   },
   {
     uid: "13" as ForeignKey<"recipe">,
@@ -100,6 +111,7 @@ export const testRecipes: Recipe[] = [
     lastUsedAt: null,
     tags: [],
     veg: true,
+    ingredients: [I.chickenBroth, I.garlic, I.onion],
   },
   {
     uid: "14" as ForeignKey<"recipe">,
@@ -107,6 +119,7 @@ export const testRecipes: Recipe[] = [
     xqScore: 0,
     lastUsedAt: null,
     veg: false,
+    ingredients: [I.chickenBroth, I.garlic, I.onion],
   },
   {
     uid: "15" as ForeignKey<"recipe">,
@@ -114,6 +127,7 @@ export const testRecipes: Recipe[] = [
     xqScore: 0,
     lastUsedAt: null,
     veg: false,
+    ingredients: [I.chickenBroth, I.garlic, I.onion],
   },
   {
     uid: "16" as ForeignKey<"recipe">,
@@ -121,6 +135,7 @@ export const testRecipes: Recipe[] = [
     xqScore: 0,
     lastUsedAt: null,
     veg: false,
+    ingredients: [I.chickenBroth, I.garlic, I.onion],
   },
   {
     uid: "17" as ForeignKey<"recipe">,
@@ -128,6 +143,7 @@ export const testRecipes: Recipe[] = [
     xqScore: 0,
     lastUsedAt: null,
     veg: false,
+    ingredients: [I.chickenBroth, I.garlic, I.onion],
   },
   {
     uid: "18" as ForeignKey<"recipe">,
@@ -135,6 +151,7 @@ export const testRecipes: Recipe[] = [
     xqScore: 0,
     lastUsedAt: null,
     veg: false,
+    ingredients: [I.chickenBroth, I.garlic, I.onion],
   },
   {
     uid: "19" as ForeignKey<"recipe">,
@@ -142,6 +159,7 @@ export const testRecipes: Recipe[] = [
     xqScore: 0,
     lastUsedAt: null,
     veg: false,
+    ingredients: [I.chickenBroth, I.garlic, I.onion],
   },
   {
     uid: "20" as ForeignKey<"recipe">,
@@ -149,6 +167,7 @@ export const testRecipes: Recipe[] = [
     xqScore: 0,
     lastUsedAt: null,
     veg: false,
+    ingredients: [I.chickenBroth, I.garlic, I.onion],
   },
   {
     uid: "21" as ForeignKey<"recipe">,
@@ -156,6 +175,7 @@ export const testRecipes: Recipe[] = [
     xqScore: 0,
     lastUsedAt: null,
     veg: false,
+    ingredients: [I.chickenBroth, I.garlic, I.onion],
   },
   {
     uid: "22" as ForeignKey<"recipe">,
@@ -163,6 +183,7 @@ export const testRecipes: Recipe[] = [
     xqScore: 0,
     lastUsedAt: null,
     veg: false,
+    ingredients: [I.chickenBroth, I.garlic, I.onion],
   },
   {
     uid: "23" as ForeignKey<"recipe">,
@@ -170,6 +191,7 @@ export const testRecipes: Recipe[] = [
     xqScore: 0,
     lastUsedAt: null,
     veg: false,
+    ingredients: [I.chickenBroth, I.garlic, I.onion],
   },
   {
     uid: "24" as ForeignKey<"recipe">,
@@ -177,6 +199,7 @@ export const testRecipes: Recipe[] = [
     xqScore: 0,
     lastUsedAt: null,
     veg: false,
+    ingredients: [I.chickenBroth, I.garlic, I.onion],
   },
   {
     uid: "25" as ForeignKey<"recipe">,
@@ -184,5 +207,6 @@ export const testRecipes: Recipe[] = [
     xqScore: 0,
     lastUsedAt: null,
     veg: false,
+    ingredients: [I.chickenBroth, I.garlic, I.onion],
   },
 ]

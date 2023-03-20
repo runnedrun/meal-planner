@@ -2,6 +2,7 @@ import { creators, setters } from "@/data/fb"
 import { buildComponentsForField } from "@/data/fieldDisplayComponents/fieldDisplayComponentsBuilders"
 import { boolParam } from "@/data/paramObsBuilders/boolParam"
 import { filtered } from "@/data/paramObsBuilders/filtered"
+import { Recipe } from "@/data/types/Recipe"
 import { logObs } from "@/helpers/logObs"
 import { memoizeDataFunc } from "@/helpers/memoizeDataFunc"
 import { AdminPageLayout } from "@/page_helpers/admin/AdminPageLayout"
@@ -26,7 +27,7 @@ const CompaniesDataTable = builDefaultDataViewFromFieldDisplays(
       components: buildComponentsForField("name"),
     },
   },
-  { newItemFn: () => creators.recipe({ name: "New Recipe" }) }
+  { newItemFn: () => creators.recipe({ name: "New Recipe" } as Recipe) }
 )
 const RecipesDisplay = rootComponent(() => (
   <AdminPageLayout title={`Recipes`}>

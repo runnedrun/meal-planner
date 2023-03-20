@@ -1,3 +1,4 @@
+import { isDemoMode } from "@/helpers/isDemoMode"
 import { isServerside } from "@/helpers/isServerside"
 import { getAnalytics, setUserId } from "firebase/analytics"
 import { isUndefined } from "mathjs"
@@ -9,7 +10,9 @@ export const WINDOW_KEY_USER_ID_PROMISE = "_definedUserIdPromise"
 
 export const setLoggerUserId = (userId) => {
   loggerUserIdSubject.next(userId)
-  setUserId(getAnalytics(), userId)
+  if (!isDemoMode()) {
+    setUserId(getAnalytics(), userId)
+  }
 }
 
 export const getLoggerUserId = () => {

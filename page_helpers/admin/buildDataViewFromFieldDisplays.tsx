@@ -118,8 +118,7 @@ export const buildDataViewFromAdminSpecs =
           buildSearchResultsObs
         )(adminDisplaySpecs, optionsWithColActions)
         return <Component />
-      },
-      { log: true }
+      }
     )
     return () => (
       <div className="flex h-full flex-col">

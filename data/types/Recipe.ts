@@ -1,5 +1,6 @@
 import { Timestamp } from "firebase/firestore"
 import { Model } from "../baseTypes/Model"
+import { Ingredients } from "./Ingredients"
 
 export enum RecipeTag {
   Western = "western",
@@ -16,5 +17,6 @@ export type Recipe = Model<
     lastUsedAt?: Timestamp
     veg?: boolean
     tags?: RecipeTag[]
+    ingredients: Ingredients[]
   }
 >

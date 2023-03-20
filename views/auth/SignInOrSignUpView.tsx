@@ -59,11 +59,7 @@ export const SignInOrSignUpView = ({ signUpMode }: SignInOrSignUpProps) => {
       signInFn={(email, password) => {
         const auth = getAuth()
         const signInPromise = signUpMode
-          ? createUserWithEmailAndPassword(auth, email, password).then(
-              (user) => {
-                setters.privateUser(user.user.uid, { email: email })
-              }
-            )
+          ? createUserWithEmailAndPassword(auth, email, password)
           : signInWithEmailAndPassword(auth, email, password)
         signInPromise.catch((e: FirebaseError) => {
           console.log("ERROR", e)

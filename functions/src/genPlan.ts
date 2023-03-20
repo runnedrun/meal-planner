@@ -18,11 +18,11 @@ const logDayMeals = (dayMeals: DayMeals) => {
   console.log("day:", dayMeals.dayIndex, dayMeals.score)
   console.log("requirements:", DayTags[dayMeals.dayIndex].tags)
   console.log("veg:")
-  logRecipe(dayMeals.veg)
+  logRecipe(dayMeals.recipes[0])
   console.log("meat 1:")
-  logRecipe(dayMeals.other[0])
+  logRecipe(dayMeals.recipes[1])
   console.log("meat 2:")
-  logRecipe(dayMeals.other[1])
+  logRecipe(dayMeals.recipes[2])
 }
 
 export const logMealPlan = (mealPlan: DayMeals[]) => {

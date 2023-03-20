@@ -31,8 +31,7 @@ const generateAllPossibleDayMeals = (
   vegRecipes.forEach((thisVegRecipe) => {
     allPossibleMeatCombos.forEach((thisMeatCombo) => {
       possibleDayMeals.push({
-        veg: thisVegRecipe,
-        other: thisMeatCombo,
+        recipes: [thisVegRecipe, ...thisMeatCombo],
         dayIndex: dayIndex,
       })
     })
@@ -53,19 +52,11 @@ const getRecencyScoreForDayMeal = (
   dayStartMs: number,
   recipeIdsToLastUsedMs: Record<string, number>
 ) => {
-  const vegLastUsed = getLastUsedForRecipe(dayMeal.veg, recipeIdsToLastUsedMs)
-  const otherLastUsedAts = dayMeal.other.map((_) =>
+  const lastUsedAts = dayMeal.recipes.map((_) =>
     getLastUsedForRecipe(_, recipeIdsToLastUsedMs)
   )
-  const allLastUsedAts = [vegLastUsed, ...otherLastUsedAts]
 
-  const nonZeroLastUsed = allLastUsedAts.filter((_) => _)
-
-  // if (nonZeroLastUsed.length) {
-  //   console.log("last used?", nonZeroLastUsed)
-  // }
-
-  const recencyScore = allLastUsedAts.reduce((acc, recipeLastUsed) => {
+  const recencyScore = lastUsedAts.reduce((acc, recipeLastUsed) => {
     return acc + Math.log(dayStartMs - recipeLastUsed + 1)
   }, 0)
 
@@ -81,10 +72,10 @@ const scoreDayMeals = (
   // then use that map to get the last day used, the fall back to the one set or 0
 
   const xqScores = dayMeals.map((_) =>
-    sum([_.veg.xqScore || 2.5, ..._.other.map((__) => __.xqScore || 2.5)])
+    sum(_.recipes.map((__) => __.xqScore || 2.5))
   )
   const dgScores = dayMeals.map((_) =>
-    sum([_.veg.dgScore || 2.5, ..._.other.map((__) => __.dgScore || 2.5)])
+    sum(_.recipes.map((__) => __.dgScore || 2.5))
   )
 
   const cumXqScore = sum(xqScores)
@@ -118,8 +109,7 @@ export const genIdealMealPlan = (
       const currentDay = path.length
 
       const recipeIdsToLastUsedMs = path.reduce((acc, dayMeal) => {
-        const allRecipes = [dayMeal.veg, ...dayMeal.other]
-        allRecipes.map((recipe) => {
+        dayMeal.recipes.map((recipe) => {
           acc[recipe.uid] = weekStartMs + dayMeal.dayIndex * twentyFourHours
         })
         return acc
