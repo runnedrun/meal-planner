@@ -6,6 +6,7 @@ export enum RecipeTag {
   Western = "western",
   Eastern = "eastern",
   Fast = "fast",
+  Special = "special",
 }
 
 export type Recipe = Model<
@@ -18,5 +19,7 @@ export type Recipe = Model<
     veg?: boolean
     tags?: RecipeTag[]
     ingredients: Ingredients[]
+    notes?: string
+    standalone?: boolean
   }
 >
