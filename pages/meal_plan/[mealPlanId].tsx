@@ -106,8 +106,11 @@ const DayMealsDisplay = ({
   }
   return (
     <div>
-      <div className="text-xl">
-        Day {dayIndex}, {moment(dayStartMs).format(momentFormatString)}
+      <div className="flex gap-2">
+        <div className="text-xl">
+          Day {dayIndex}, {moment(dayStartMs).format(momentFormatString)}
+        </div>
+        <div>: {dayMeals.score}</div>
       </div>
       <div className="flex flex-col gap-5">
         {dayMeals.recipes.map((recipe, index) => {

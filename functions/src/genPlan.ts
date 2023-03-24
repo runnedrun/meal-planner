@@ -41,7 +41,8 @@ export const genPlan: () => MealPlan = () => {
   })
   const plan = genIdealMealPlan(recipes, dayStart.valueOf())
 
-  // logMealPlan(plan)
+  logMealPlan(plan)
+
   return {
     startOn: Timestamp.fromMillis(dayStart.valueOf()),
     days: plan,

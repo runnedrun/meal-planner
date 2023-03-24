@@ -241,7 +241,7 @@ export const genIdealMealPlan = (
       return newPaths
     },
     solutionValidator: (arg) => {
-      return arg.path.length === 7
+      return arg.path.length === 2
     },
     childrenComparator: (
       pathA: { path: DayMeals[] },

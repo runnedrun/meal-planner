@@ -19,7 +19,7 @@ import { map } from "rxjs"
 const mealPlans = memoizeDataFunc(() =>
   filtered("mealPlan", {
     archived: boolParam("archived", false),
-  }).pipe(map(sortAndRaiseNewItems("startOn")))
+  }).pipe(map(sortAndRaiseNewItems()))
 )
 
 const MealPlansTable = builDefaultDataViewFromFieldDisplays(
@@ -27,6 +27,10 @@ const MealPlansTable = builDefaultDataViewFromFieldDisplays(
   mealPlans
 )(
   {
+    createdAt: {
+      components: buildComponentsForField("createdAt"),
+      type: "fbTimestamp",
+    },
     startOn: {
       components: buildComponentsForField("startOn"),
       type: "fbTimestamp",
