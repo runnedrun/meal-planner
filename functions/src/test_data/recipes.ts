@@ -1,7 +1,7 @@
 import { ForeignKey } from "@/data/baseTypes/ForeignKey"
 import { Recipe, RecipeTag } from "@/data/types/Recipe"
 import { objKeys } from "@/helpers/objKeys"
-import { uniq } from "lodash-es"
+import { groupBy, uniq } from "lodash-es"
 import { Ingredients as I } from "@/data/types/Ingredients"
 
 export const recipes: Recipe[] = [
@@ -30,7 +30,7 @@ export const recipes: Recipe[] = [
     ingredients: [I.porkStrips, I.kimchi, I.onion, I.gochujang],
   },
   {
-    uid: "2" as ForeignKey<"recipe">,
+    uid: "2_1" as ForeignKey<"recipe">,
     name: "Kimchi Jiggae",
     tags: [RecipeTag.Eastern],
     ingredients: [
@@ -58,6 +58,8 @@ export const recipes: Recipe[] = [
   {
     uid: "4" as ForeignKey<"recipe">,
     name: "Taiwanese Chicken in Air Fryer",
+    notes:
+      "marinade the chicken with soy, 5 spice,  hua jiao oil, and shaoxing, then dust with white pepper, cuihong, 5 spice and salt",
     tags: [RecipeTag.Eastern],
     ingredients: [I.chickenChunks, I.tapiocaFlour],
   },
@@ -92,20 +94,20 @@ export const recipes: Recipe[] = [
     ingredients: [I.tofu, I.groundPork, I.onion, I.ginger],
   },
   {
-    uid: "9" as ForeignKey<"recipe">,
+    uid: "9_1" as ForeignKey<"recipe">,
     name: "Sichuan Cauliflower with pork belly",
     tags: [RecipeTag.Eastern],
     ingredients: [I.cauliflower, I.porkBelly],
   },
   {
-    uid: "9" as ForeignKey<"recipe">,
+    uid: "9_2" as ForeignKey<"recipe">,
     name: "Roasted Cauliflower with a bit of cui hong",
     veg: true,
     tags: [RecipeTag.Eastern, RecipeTag.Fast],
     ingredients: [I.cauliflower],
   },
   {
-    uid: "9" as ForeignKey<"recipe">,
+    uid: "9_3" as ForeignKey<"recipe">,
     name: "Steamed Cauliflower with salt",
     veg: true,
     tags: [RecipeTag.Western, RecipeTag.Fast],
@@ -126,7 +128,7 @@ export const recipes: Recipe[] = [
     ingredients: [I.frozenSpinach],
   },
   {
-    uid: "11" as ForeignKey<"recipe">,
+    uid: "11_1" as ForeignKey<"recipe">,
     name: "Stir fried cabbage with spice and vinegar",
     veg: true,
     tags: [RecipeTag.Eastern],
@@ -157,7 +159,7 @@ export const recipes: Recipe[] = [
     ingredients: [I.porkStrips, I.onion],
   },
   {
-    uid: "15" as ForeignKey<"recipe">,
+    uid: "15_1" as ForeignKey<"recipe">,
     name: "pork belly and eggs with doubanjiang",
     tags: [RecipeTag.Eastern],
     ingredients: [I.porkStrips, I.onion, I.eggs],
@@ -338,13 +340,13 @@ export const recipes: Recipe[] = [
     ingredients: [I.beanSprouts, I.onion],
   },
   {
-    uid: "31" as ForeignKey<"recipe">,
+    uid: "31_1" as ForeignKey<"recipe">,
     name: "Steamed chicken with light soy sauce",
     tags: [RecipeTag.Eastern],
     ingredients: [I.wholeChicken, I.ginger],
   },
   {
-    uid: "31" as ForeignKey<"recipe">,
+    uid: "31_2" as ForeignKey<"recipe">,
     name: "Steamed egg with scallions",
     tags: [RecipeTag.Eastern],
     ingredients: [I.eggs, I.springOnions],
@@ -356,14 +358,14 @@ export const recipes: Recipe[] = [
     ingredients: [I.eggs, I.springOnions],
   },
   {
-    uid: "32" as ForeignKey<"recipe">,
+    uid: "32_1" as ForeignKey<"recipe">,
     name: "Hui guo rou",
     tags: [RecipeTag.Eastern],
     notes: "boil sliced pork belly first",
     ingredients: [I.porkBelly, I.springOnions, I.onion],
   },
   {
-    uid: "32" as ForeignKey<"recipe">,
+    uid: "32_2" as ForeignKey<"recipe">,
     name: "spicy pork belly with bean sprouts",
     tags: [RecipeTag.Eastern],
     ingredients: [I.porkBelly, I.springOnions, I.onion, I.beanSprouts],
@@ -534,13 +536,13 @@ export const recipes: Recipe[] = [
     ingredients: [I.chickenChunks, I.morrocanSauce, I.onion],
   },
   {
-    uid: "53" as ForeignKey<"recipe">,
+    uid: "53_1" as ForeignKey<"recipe">,
     name: "morrocan chicken with migros sauce",
     tags: [RecipeTag.Western],
     ingredients: [I.chickenChunks, I.morrocanSauce, I.onion],
   },
   {
-    uid: "53" as ForeignKey<"recipe">,
+    uid: "53_2" as ForeignKey<"recipe">,
     name: "Eggplant parmigiano",
     tags: [RecipeTag.Western, RecipeTag.Special],
     ingredients: [
@@ -553,6 +555,13 @@ export const recipes: Recipe[] = [
   },
 ]
 
-if (uniq(objKeys(recipes)) !== objKeys(recipes)) {
-  throw new Error("Duplicate recipe UIDs")
+const groupedBy = groupBy(recipes, (r) => r.uid)
+
+const dups = objKeys(groupedBy).filter((uid) => {
+  return groupedBy[uid].length > 1
+})
+
+if (dups.length > 0) {
+  console.error("duplicate ids:", dups)
+  throw new Error(`Duplicate recipe UIDs: ${JSON.stringify(dups)}`)
 }

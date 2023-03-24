@@ -9,6 +9,10 @@ export enum RecipeTag {
   Special = "special",
 }
 
+// these tags are ONLY allowed on the day that contains them, but
+// are optional for that day
+export const exclusiveOptionalTags = [RecipeTag.Special]
+
 export type Recipe = Model<
   "recipe",
   {

@@ -89,3 +89,13 @@ export enum Ingredients {
   gochujang = "gochujang",
   zhacai = "zhacai",
 }
+
+export const discourageDuplicationFor = [
+  Ingredients.chickenChunks,
+  Ingredients.wholeChicken,
+  Ingredients.porkStrips,
+  Ingredients.porkBelly,
+  Ingredients.stewPork,
+  Ingredients.groundPork,
+  Ingredients.sausage,
+]

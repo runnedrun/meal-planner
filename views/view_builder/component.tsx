@@ -242,8 +242,6 @@ export function component<MapToResolve extends Record<any, any>>(
 
       const componentProps = getComponentPropsWithDefault(componentContext)
 
-      console.log("data", componentProps, componentContext)
-
       return shouldHideComponent(componentProps) ? (
         <span></span>
       ) : (

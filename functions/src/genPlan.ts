@@ -4,7 +4,8 @@ import { Timestamp } from "firebase/firestore"
 import moment from "moment"
 import { DayTags } from "./helpers/DayTags"
 import { genIdealMealPlan } from "./helpers/genMealPlan"
-import { testRecipes } from "./test_data/testRecipes"
+import { recipes } from "./test_data/recipes"
+// import { testRecipes } from "./test_data/testRecipes"
 
 const logRecipe = (recipe: Recipe) => {
   console.log("name:", recipe.name)
@@ -38,7 +39,7 @@ export const genPlan: () => MealPlan = () => {
     second: 0,
     millisecond: 0,
   })
-  const plan = genIdealMealPlan(testRecipes, dayStart.valueOf())
+  const plan = genIdealMealPlan(recipes, dayStart.valueOf())
 
   // logMealPlan(plan)
   return {

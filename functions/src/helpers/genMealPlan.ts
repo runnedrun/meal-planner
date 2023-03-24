@@ -1,11 +1,20 @@
-import { Recipe } from "@/data/types/Recipe"
+import { exclusiveOptionalTags, Recipe, RecipeTag } from "@/data/types/Recipe"
 import { isServerside } from "@/helpers/isServerside"
 import { deepCopy } from "@firebase/util"
-import { clone, sum, sumBy } from "lodash-es"
+import {
+  clone,
+  memoize,
+  partition,
+  shuffle,
+  sortBy,
+  sum,
+  sumBy,
+} from "lodash-es"
 import { BeamSearch } from "./BeamSearch"
 import { DayTags } from "./DayTags"
 import normalize from "array-normalize"
 import { DayMeals } from "@/data/types/MealPlan"
+import { discourageDuplicationFor, Ingredients } from "@/data/types/Ingredients"
 
 const twentyFourHours = 24 * 60 * 60 * 1000
 
@@ -18,11 +27,23 @@ const generateAllPossibleDayMeals = (
   const dayTags = DayTags[dayIndex]?.tags || []
   const recipesWithRequiredTags = possibleRecipes.filter((recipe) => {
     const recipeHasAllTags = dayTags.every((tag) => recipe.tags?.includes(tag))
-    return recipeHasAllTags
+    const recipeDoesntHaveAnyExcludedTags = exclusiveOptionalTags.every((_) => {
+      return !recipe.tags?.includes(_) || dayTags.includes(_)
+    })
+    return recipeHasAllTags && recipeDoesntHaveAnyExcludedTags
   })
-  const vegRecipes = recipesWithRequiredTags.filter((_) => _.veg)
-  const nonVegRecipes = recipesWithRequiredTags.filter((_) => !_.veg)
-  const possibleDayMeals = [] as DayMeals[]
+  const [standalone, nonStandalone] = partition(
+    recipesWithRequiredTags,
+    (_) => _.standalone
+  )
+
+  const standaloneDayMeals = standalone.map(
+    (recipe) => ({ recipes: [recipe], dayIndex } as DayMeals)
+  )
+
+  const vegRecipes = nonStandalone.filter((_) => _.veg)
+  const nonVegRecipes = nonStandalone.filter((_) => !_.veg)
+  const possibleDayMeals = [...standaloneDayMeals] as DayMeals[]
 
   const allPossibleMeatCombos = nonVegRecipes.flatMap((first, i) =>
     nonVegRecipes.slice(i + 1).map((second) => [first, second])
@@ -32,7 +53,7 @@ const generateAllPossibleDayMeals = (
     allPossibleMeatCombos.forEach((thisMeatCombo) => {
       possibleDayMeals.push({
         recipes: [thisVegRecipe, ...thisMeatCombo],
-        dayIndex: dayIndex,
+        dayIndex,
       })
     })
   })
@@ -63,38 +84,119 @@ const getRecencyScoreForDayMeal = (
   return recencyScore / 10
 }
 
+export const reverseRecentlyUsedOrder = memoize((recipes: Recipe[]) => {
+  return sortBy(recipes, (_) => -_.lastUsedAt)
+})
+
+export const getIngredientRecencyScoreForDayMeal = (
+  dayMeals: DayMeals,
+  dayStartMs: number,
+  allRecipes: Recipe[],
+  recipeIdsToLastUsedMs: Record<string, number>
+) => {
+  const reversed = reverseRecentlyUsedOrder(allRecipes)
+  const ingredientsByLastUsed = {} as Record<Ingredients, number>
+
+  reversed.forEach((recipe) =>
+    recipe.ingredients.forEach((ingredient) => {
+      if (discourageDuplicationFor.includes(ingredient)) {
+        ingredientsByLastUsed[ingredient] =
+          recipeIdsToLastUsedMs[recipe.uid] ||
+          recipe.lastUsedAt?.toMillis() ||
+          0
+      }
+    })
+  )
+
+  const dupIngredientDetractionScore = dayMeals.recipes.reduce(
+    (acc, recipe) => {
+      const lastUsedForIngredientsWeDontWantToDup = recipe.ingredients
+        .map((acc, ingredient) => {
+          const lastUsed = ingredientsByLastUsed[ingredient]
+          if (lastUsed) {
+            return acc + Math.log(dayStartMs - lastUsed + 1)
+          }
+        })
+        .filter(Boolean)
+      const averageIngredientScore =
+        sum(lastUsedForIngredientsWeDontWantToDup) /
+        lastUsedForIngredientsWeDontWantToDup.length
+
+      return acc + averageIngredientScore
+    },
+    0
+  )
+
+  return (-1 * dupIngredientDetractionScore) / 10
+}
+
+const getSpecialTagScoreForDayMeals = (dayMeals: DayMeals) => {
+  return dayMeals.recipes.some((recipe) => {
+    return recipe.tags.includes(RecipeTag.Special)
+  })
+    ? 2
+    : 0
+}
+
+const getAverageScoreForPath = (
+  path: DayMeals[],
+  scoreFn: (dayMeals: DayMeals) => number
+) => {
+  const allScores = path.map((dayMeal) => scoreFn(dayMeal))
+  const cumScore = sum(allScores)
+
+  return cumScore / path.length
+}
+
 const scoreDayMeals = (
   dayMeals: DayMeals[],
   weekStartMs: number,
-  recipeIdsToLastUsedMs: Record<string, number>
+  recipeIdsToLastUsedMs: Record<string, number>,
+  allRecipes: Recipe[]
 ) => {
   // gen a map of all the last day used for the recipes in this meal plan
   // then use that map to get the last day used, the fall back to the one set or 0
 
-  const xqScores = dayMeals.map((_) =>
-    sum(_.recipes.map((__) => __.xqScore || 2.5))
-  )
-  const dgScores = dayMeals.map((_) =>
-    sum(_.recipes.map((__) => __.dgScore || 2.5))
+  const avgXqScore = getAverageScoreForPath(dayMeals, (dayMeal) =>
+    sum(dayMeal.recipes.map((_) => _.xqScore || 2.5))
   )
 
-  const cumXqScore = sum(xqScores)
-  const cumDgScore = sum(dgScores)
+  const avgDgScore = getAverageScoreForPath(dayMeals, (dayMeal) =>
+    sum(dayMeal.recipes.map((_) => _.dgScore || 2.5))
+  )
 
-  const avgRatingScore = (cumDgScore + cumXqScore) / (dayMeals.length * 2)
+  const avgRatingScore = (avgXqScore + avgDgScore) / 2
 
-  const allRecencyScores = dayMeals.map((dayMeal) =>
+  const avgRecencyScore = getAverageScoreForPath(dayMeals, (dayMeal) =>
     getRecencyScoreForDayMeal(
       dayMeal,
       dayMeal.dayIndex * twentyFourHours + weekStartMs,
       recipeIdsToLastUsedMs
     )
   )
-  const cumRecencyScore = sum(allRecencyScores)
 
-  const averageRecencyScore = cumRecencyScore / dayMeals.length
+  const avgIngredientRecencyScore = getAverageScoreForPath(
+    dayMeals,
+    (dayMeal) =>
+      getIngredientRecencyScoreForDayMeal(
+        dayMeal,
+        dayMeal.dayIndex * twentyFourHours + weekStartMs,
+        allRecipes,
+        recipeIdsToLastUsedMs
+      )
+  )
 
-  const scores = [avgRatingScore, averageRecencyScore]
+  const avgSpecialTagScore = getAverageScoreForPath(dayMeals, (dayMeal) =>
+    getSpecialTagScoreForDayMeals(dayMeal)
+  )
+
+  const scores = [
+    avgRatingScore,
+    avgRecencyScore,
+    avgIngredientRecencyScore,
+    avgSpecialTagScore,
+  ]
+
   return sum(scores) / scores.length
 }
 
@@ -124,12 +226,13 @@ export const genIdealMealPlan = (
         return console.error("NO MEALS AVAILABLE for day ", currentDay)
       }
 
-      const newPaths = allPossibleMeals.map((meal) => {
+      const newPaths = shuffle(allPossibleMeals).map((meal) => {
         const newPath = [...path, meal]
         const newScore = scoreDayMeals(
           newPath,
           weekStartMs,
-          recipeIdsToLastUsedMs
+          recipeIdsToLastUsedMs,
+          recipesClone
         )
         meal.score = newScore
         return { path: newPath }
