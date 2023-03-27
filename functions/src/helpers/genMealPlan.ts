@@ -14,11 +14,11 @@ import { BeamSearch } from "./BeamSearch"
 import { DayTags } from "./DayTags"
 import normalize from "array-normalize"
 import { DayMeals } from "@/data/types/MealPlan"
-import { discourageDuplicationFor, Ingredients } from "@/data/types/Ingredients"
+import { discourageDuplicationFor, I } from "@/data/types/Ingredients"
 
 const twentyFourHours = 24 * 60 * 60 * 1000
 
-export const DEFAULT_LOOK_FORWARD_SIZE = 4
+const nDays = 5
 
 const generateAllPossibleDayMeals = (
   possibleRecipes: Recipe[],
@@ -95,7 +95,7 @@ export const getIngredientRecencyScoreForDayMeal = (
   recipeIdsToLastUsedMs: Record<string, number>
 ) => {
   const reversed = reverseRecentlyUsedOrder(allRecipes)
-  const ingredientsByLastUsed = {} as Record<Ingredients, number>
+  const ingredientsByLastUsed = {} as Record<I, number>
 
   reversed.forEach((recipe) =>
     recipe.ingredients.forEach((ingredient) => {
@@ -241,7 +241,7 @@ export const genIdealMealPlan = (
       return newPaths
     },
     solutionValidator: (arg) => {
-      return arg.path.length === 2
+      return arg.path.length === nDays
     },
     childrenComparator: (
       pathA: { path: DayMeals[] },

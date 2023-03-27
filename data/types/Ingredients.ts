@@ -1,4 +1,4 @@
-export enum Ingredients {
+export enum I {
   // meat
   chickenChunks = "chicken chunks",
   wholeChicken = "whole chicken",
@@ -91,11 +91,104 @@ export enum Ingredients {
 }
 
 export const discourageDuplicationFor = [
-  Ingredients.chickenChunks,
-  Ingredients.wholeChicken,
-  Ingredients.porkStrips,
-  Ingredients.porkBelly,
-  Ingredients.stewPork,
-  Ingredients.groundPork,
-  Ingredients.sausage,
+  I.chickenChunks,
+  I.wholeChicken,
+  I.porkStrips,
+  I.porkBelly,
+  I.stewPork,
+  I.groundPork,
+  I.sausage,
 ]
+
+export const migrosOrder = [
+  // early
+  I.beanSprouts,
+  I.tofu,
+  I.salad,
+  I.olives,
+
+  //veg
+  I.avocado,
+  I.ginger,
+  I.garlic,
+  I.onion,
+  I.qingjiao,
+  I.mushrooms,
+  I.cauliflower,
+  I.greenBeans,
+  I.flatBeans,
+  I.springOnions,
+  I.celery,
+  I.potatoes,
+  I.bigTomatoes,
+  I.spinach,
+  I.bokchoi,
+  I.chineseCabbage,
+  I.whiteCabbage,
+  I.eggplant,
+  I.sweetPotato,
+  I.cherryTomatoes,
+
+  // meat
+  I.chickenChunks,
+  I.wholeChicken,
+  I.porkStrips,
+  I.porkBelly,
+  I.stewPork,
+  I.groundPork,
+  I.sausage,
+  I.chorizo,
+  I.chickenWings,
+  I.ham,
+  I.bacon,
+
+  // dairy
+  I.coconutYog,
+  I.goatCheese,
+  I.eggs,
+  I.mozarella,
+  I.pizzaCheese,
+
+  // third
+  I.cranberries,
+  I.chickenBroth,
+  I.raisins,
+  I.cannedTuna,
+  I.salmon,
+  I.frozenSeafoodMix,
+  I.bigShrimp,
+  I.frozenSpinach,
+  I.smallShrimp,
+  I.frozenFish,
+  I.driedMushrooms,
+  I.lentilSpaghetti,
+  I.peaPasta,
+  I.cannedCorn,
+  I.cannedTomatoes,
+  I.coke,
+  I.driedPeas,
+  I.pineapple,
+  I.lentils,
+  I.cannedBeans,
+  I.japaneseCurryRoux,
+  I.tomatoPaste,
+  I.peaPasta,
+  I.morrocanSauce,
+]
+
+export const chineseSupermarketItems = [
+  I.heimoer,
+  I.fishBalls,
+  I.japaneseCurryRoux,
+  I.kimchi,
+  I.gochujang,
+  I.zhacai,
+]
+
+export const butcher = [I.porkNeck, I.duck, I.tigerShrimp, I.ribs]
+
+export const itemQuantities = {
+  [I.eggs]: 4,
+  [I.bigTomatoes]: 3,
+  [I.onion]: 2,
+}

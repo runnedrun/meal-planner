@@ -31,8 +31,9 @@ export const buildForeignKeySelector = <
       const valuesArray = isArray(value) ? value : [value]
       const getValue = (id: string) => {
         const a = [...possibleValues, ...valuesArray].find(
-          (_) => _.uid === id
+          (_) => _?.uid === id
         ) as any
+
         return a
       }
       const options = possibleValues
@@ -46,7 +47,7 @@ export const buildForeignKeySelector = <
       return (
         <AdminComboxBox
           options={options}
-          getIdFromValue={(_) => _?.uid}
+          getIdFromValue={(_) => _ as string}
           getValueFromId={getValue}
           autocompleteOptions={autocompleteOptions as any}
           value={value}

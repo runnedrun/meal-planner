@@ -2,7 +2,7 @@ import { ForeignKey } from "@/data/baseTypes/ForeignKey"
 import { Recipe, RecipeTag } from "@/data/types/Recipe"
 import { objKeys } from "@/helpers/objKeys"
 import { groupBy, uniq } from "lodash-es"
-import { Ingredients as I } from "@/data/types/Ingredients"
+import { I as I } from "@/data/types/Ingredients"
 
 export const recipes: Recipe[] = [
   {
@@ -349,7 +349,7 @@ export const recipes: Recipe[] = [
     uid: "31_2" as ForeignKey<"recipe">,
     name: "Steamed egg with scallions",
     tags: [RecipeTag.Eastern],
-    ingredients: [I.eggs, I.springOnions],
+    ingredients: [I.eggs, I.eggs, I.springOnions],
   },
   {
     uid: "32" as ForeignKey<"recipe">,

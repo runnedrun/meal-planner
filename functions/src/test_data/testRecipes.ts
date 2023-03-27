@@ -1,7 +1,7 @@
 import { ForeignKey } from "@/data/baseTypes/ForeignKey"
 import { Recipe, RecipeTag } from "@/data/types/Recipe"
 import { Timestamp } from "firebase/firestore"
-import { Ingredients as I } from "@/data/types/Ingredients"
+import { I as I } from "@/data/types/Ingredients"
 
 export const testRecipes: Recipe[] = [
   {
