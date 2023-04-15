@@ -273,8 +273,6 @@ const MealPlanDisplay = component(dataFn, ({ mealPlan }) => {
     copyableMealPlan += `</ul>`
   })
 
-  console.log("copyableMealPlan", copyableMealPlan)
-
   return (
     <div className="flex w-full justify-center">
       <div>

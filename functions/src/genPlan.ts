@@ -3,9 +3,9 @@ import { Recipe } from "@/data/types/Recipe"
 import { Timestamp } from "firebase/firestore"
 import moment from "moment"
 import { DayTags } from "./helpers/DayTags"
-import { genIdealMealPlan } from "./helpers/genMealPlan"
+import { genIdealMealPlan, PathDayMeals } from "./helpers/genMealPlan"
 import { recipes } from "./test_data/recipes"
-// import { testRecipes } from "./test_data/testRecipes"
+// import { testRecipes as recipes } from "./test_data/testRecipes"
 
 const logRecipe = (recipe: Recipe) => {
   console.log("name:", recipe.name)
@@ -15,8 +15,8 @@ const logRecipe = (recipe: Recipe) => {
     : "never"
   console.log("lastUsed:", lastUsedFormattedAsDate)
 }
-const logDayMeals = (dayMeals: DayMeals) => {
-  console.log("day:", dayMeals.dayIndex, dayMeals.score)
+const logDayMeals = (dayMeals: PathDayMeals) => {
+  console.log("day:", dayMeals.dayIndex, dayMeals.score, dayMeals.scores)
   console.log("requirements:", DayTags[dayMeals.dayIndex].tags)
   console.log("veg:")
   logRecipe(dayMeals.recipes[0])
@@ -26,7 +26,7 @@ const logDayMeals = (dayMeals: DayMeals) => {
   logRecipe(dayMeals.recipes[2])
 }
 
-export const logMealPlan = (mealPlan: DayMeals[]) => {
+export const logMealPlan = (mealPlan: PathDayMeals[]) => {
   mealPlan.forEach(logDayMeals)
 }
 
@@ -45,6 +45,6 @@ export const genPlan: () => MealPlan = () => {
 
   return {
     startOn: Timestamp.fromMillis(dayStart.valueOf()),
-    days: plan,
+    days: plan as DayMeals[],
   } as MealPlan
 }

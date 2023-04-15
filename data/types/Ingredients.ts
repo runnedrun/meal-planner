@@ -11,11 +11,13 @@ export enum I {
   chickenWings = "chicken wings",
   salmon = "salmon",
   ham = "ham",
+  hamHock = "ham hock",
   bacon = "bacon",
   porkNeck = "pork neck",
   duck = "duck",
   tigerShrimp = "tiger shrimp",
   ribs = "ribs",
+  porkHock = "pork hock",
 
   // frozen
   frozenSeafoodMix = "frozen seafood mix",

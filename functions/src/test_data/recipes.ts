@@ -67,7 +67,7 @@ export const recipes: Recipe[] = [
     uid: "5" as ForeignKey<"recipe">,
     name: "Shrimp with Peppers and eggs",
     tags: [RecipeTag.Eastern],
-    ingredients: [I.bigShrimp, I.garlic, I.eggs, I.qingjiao],
+    ingredients: [I.bigShrimp, I.garlic, I.eggs, I.qingjiao, I.qingjiao],
   },
   {
     uid: "6" as ForeignKey<"recipe">,
@@ -228,9 +228,15 @@ export const recipes: Recipe[] = [
     uid: "22" as ForeignKey<"recipe">,
     name: "split pea soup",
     notes:
-      "1 bag of peas is about 500 ml of water.Add some white pepper and some hot sauce. Cook for 15 minutes.",
+      "1 bag of peas is about 1000 ml of water.Add some white pepper and some hot sauce. Optional douya. Cook for 30 minutes to really soften the ham hock.",
     tags: [RecipeTag.Western, RecipeTag.Fast],
-    ingredients: [I.driedPeas, I.chickenChunks, I.ham, I.onion, I.chickenBroth],
+    ingredients: [
+      I.driedPeas,
+      I.chickenChunks,
+      I.hamHock,
+      I.onion,
+      I.chickenBroth,
+    ],
   },
   {
     uid: "23" as ForeignKey<"recipe">,
@@ -346,12 +352,6 @@ export const recipes: Recipe[] = [
     ingredients: [I.wholeChicken, I.ginger],
   },
   {
-    uid: "31_2" as ForeignKey<"recipe">,
-    name: "Steamed egg with scallions",
-    tags: [RecipeTag.Eastern],
-    ingredients: [I.eggs, I.eggs, I.springOnions],
-  },
-  {
     uid: "32" as ForeignKey<"recipe">,
     name: "Steamed egg with scallions",
     tags: [RecipeTag.Eastern],
@@ -444,7 +444,7 @@ export const recipes: Recipe[] = [
     uid: "42" as ForeignKey<"recipe">,
     name: "Qingjiao rousi",
     tags: [RecipeTag.Eastern],
-    ingredients: [I.porkStrips, I.qingjiao],
+    ingredients: [I.porkStrips, I.qingjiao, I.qingjiao],
   },
   {
     uid: "43" as ForeignKey<"recipe">,
@@ -552,6 +552,12 @@ export const recipes: Recipe[] = [
       I.cannedTomatoes,
       I.tomatoPaste,
     ],
+  },
+  {
+    uid: "54" as ForeignKey<"recipe">,
+    name: "Braised Pork Knuckle",
+    tags: [RecipeTag.Eastern],
+    ingredients: [I.porkHock],
   },
 ]
 

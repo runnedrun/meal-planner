@@ -5,15 +5,18 @@ import moment from "moment"
 export const sortAndRaiseNewItems =
   <ModelType extends AnyGenericModel>(nameKey?: string) =>
   (items: ModelType[]) => {
-    const recentlyCreated = items.filter(
-      (company) =>
-        Date.now() - company.createdAt.toMillis() <
-        moment.duration(10, "minutes").asMilliseconds()
+    const recentlyCreated = sortBy(
+      items.filter(
+        (company) =>
+          Date.now() - company.createdAt.toMillis() <
+          moment.duration(10, "minutes").asMilliseconds()
+      ),
+      (_) => -1 * _.createdAt.toMillis()
     )
 
     const sorted = nameKey
       ? items.sort((a, b) => a[nameKey].localeCompare(b[nameKey]))
-      : sortBy(items, (_) => _.createdAt.toMillis())
+      : sortBy(items, (_) => -1 * _.createdAt.toMillis())
 
     const deduped = sorted.filter(
       (nameSorted) =>

@@ -105,7 +105,7 @@ export function component<MapToResolve extends Record<any, any>>(
     const paramObsPaths = objKeys(paramObsMap)
     const allParamObs = Object.values(paramObsMap)
     const paramsMap = getCurrentAgsMapForAllParams(allParamObs)
-    const user = useAuthUser()
+    const user = null //useAuthUser()
 
     const shouldHideComponent = (componentProps) => {
       const shouldHideBasedOnMissingData = [
@@ -256,11 +256,11 @@ export function component<MapToResolve extends Record<any, any>>(
   Component.displayName =
     config.name ||
     toTitleCase(words({ exactly: 2, join: " " })).replace(" ", "")
-
-  return withAuthUser({
-    whenUnauthedBeforeInit: AuthAction.RENDER,
-    whenUnauthedAfterInit: AuthAction.RENDER,
-  })(Component as any) as typeof Component
+  return Component
+  // return withAuthUser({
+  //   whenUnauthedBeforeInit: AuthAction.RENDER,
+  //   whenUnauthedAfterInit: AuthAction.RENDER,
+  // })(Component as any) as typeof Component
 }
 
 export const rootComponent = <MapToResolve extends Record<any, any>>(
