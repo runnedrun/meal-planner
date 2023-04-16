@@ -1,3 +1,5 @@
+import { filtered } from "@/data/paramObsBuilders/filtered"
+import { staticValue } from "@/data/paramObsBuilders/staticValue"
 import { DayMeals, MealPlan } from "@/data/types/MealPlan"
 import { Recipe } from "@/data/types/Recipe"
 import { Timestamp } from "firebase/firestore"
@@ -10,10 +12,6 @@ import { recipes } from "./test_data/recipes"
 const logRecipe = (recipe: Recipe) => {
   console.log("name:", recipe.name)
   console.log("tags:", recipe.tags)
-  const lastUsedFormattedAsDate = recipe.lastUsedAt
-    ? moment(recipe.lastUsedAt.toMillis()).format("e, MM-DD")
-    : "never"
-  console.log("lastUsed:", lastUsedFormattedAsDate)
 }
 const logDayMeals = (dayMeals: PathDayMeals) => {
   console.log("day:", dayMeals.dayIndex, dayMeals.score, dayMeals.scores)
@@ -30,7 +28,7 @@ export const logMealPlan = (mealPlan: PathDayMeals[]) => {
   mealPlan.forEach(logDayMeals)
 }
 
-export const genPlan: () => MealPlan = () => {
+export const genPlan = async (): Promise<MealPlan> => {
   const now = moment()
   // const sundayForCurrentWeek = now.clone().startOf("week")
   const dayStart = now.set({
@@ -39,7 +37,14 @@ export const genPlan: () => MealPlan = () => {
     second: 0,
     millisecond: 0,
   })
-  const plan = genIdealMealPlan(recipes, dayStart.valueOf())
+
+  const prevMealPlans = await filtered(
+    "mealPlan",
+    { archived: staticValue(false) },
+    { orderBy: { createdAt: staticValue("asc") } }
+  )
+
+  const plan = genIdealMealPlan(recipes, prevMealPlans, dayStart.valueOf())
 
   logMealPlan(plan)
 

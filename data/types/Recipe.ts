@@ -19,7 +19,6 @@ export type Recipe = Model<
     name: string
     xqScore?: number
     dgScore?: number
-    lastUsedAt?: Timestamp
     veg?: boolean
     tags?: RecipeTag[]
     ingredients: I[]

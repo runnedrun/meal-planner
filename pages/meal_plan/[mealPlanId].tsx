@@ -166,7 +166,6 @@ const RecipeDisplay = ({
           </AccordionDetails>
         </Accordion>
 
-        <div>last used: {formatDate(recipe.lastUsedAt)}</div>
         <div className="flex gap-2">
           <div>XQ: {recipe.xqScore || 2.5}</div>
           <div>DG: {recipe.dgScore || 2.5}</div>
@@ -190,7 +189,10 @@ const DayMealsDisplay = ({
   const buildReplaceFn = (recipeIndex: number) => async (newRecipe: Recipe) => {
     const thisPlan = await dataFn().mealPlan
     const days = thisPlan.days
-    days[dayIndex].recipes[recipeIndex] = newRecipe
+    days[dayIndex].recipes[recipeIndex] = {
+      ...newRecipe,
+      usedOn: Timestamp.fromMillis(dayStartMs),
+    }
     setters.mealPlan(thisPlan.uid, { days })
   }
   return (

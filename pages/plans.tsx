@@ -42,8 +42,8 @@ const MealPlansTable = builDefaultDataViewFromFieldDisplays(
     },
   },
   {
-    newItemFn: () => {
-      return creators.mealPlan(genPlan())
+    newItemFn: async () => {
+      return creators.mealPlan(await genPlan())
     },
   }
 )
