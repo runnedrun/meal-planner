@@ -212,14 +212,24 @@ export const getAverageScoreForPath = (
   return cumScore / path.length
 }
 
+// so now I want a few tweaks. 1, I want to group eastern and non eastern meals together. So there should be a higher
+// score if all the meals for a day are eastern or western.
+
+const scoreTypeConsistency = (dayMeals: DayMeals) => {
+  const allNotEastern = dayMeals.recipes.every(
+    (_) => !_.tags?.includes(RecipeTag.Eastern)
+  )
+  const allEastern = dayMeals.recipes.every((_) =>
+    _.tags?.includes(RecipeTag.Eastern)
+  )
+  return allNotEastern || allEastern ? 4 : 0
+}
+
 export const scoreDayMeals = (
   dayMeals: DayMeals[],
   weekStartMs: number,
   allRecipes: Recipe[]
 ) => {
-  // gen a map of all the last day used for the recipes in this meal plan
-  // then use that map to get the last day used, the fall back to the one set or 0
-
   const avgXqScore = getAverageScoreForPath(dayMeals, (dayMeal) =>
     sum(dayMeal.recipes.map((_) => _.xqScore || 2.5))
   )
@@ -256,11 +266,16 @@ export const scoreDayMeals = (
     getSpecialTagScoreForDayMeals(dayMeal)
   )
 
+  const avgTypeConsistencyScore = getAverageScoreForPath(dayMeals, (dayMeal) =>
+    scoreTypeConsistency(dayMeal)
+  )
+
   const scores = [
     avgRatingScore,
     avgRecencyScore,
     avgIngredientRecencyScore,
     avgSpecialTagScore,
+    avgTypeConsistencyScore,
   ]
 
   return {
@@ -270,6 +285,7 @@ export const scoreDayMeals = (
       avgRecencyScore,
       avgIngredientRecencyScore,
       avgSpecialTagScore,
+      avgTypeConsistencyScore,
     },
   }
 }
