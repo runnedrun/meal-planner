@@ -1,7 +1,7 @@
 import { docForKey } from "@/data/firebaseObsBuilders/docForKey"
 import { filtered } from "@/data/paramObsBuilders/filtered"
 import { stringParam } from "@/data/paramObsBuilders/stringParam"
-import { DayMeals } from "@/data/types/MealPlan"
+import { DayMeals, MealPlan } from "@/data/types/MealPlan"
 import { Recipe } from "@/data/types/Recipe"
 import { buildPrefetchHandler } from "@/views/view_builder/buildPrefetchHandler"
 import { component } from "@/views/view_builder/component"
@@ -16,9 +16,9 @@ import {
 import moment from "moment"
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore"
 import { Timestamp } from "firebase/firestore"
-import { Close, Remove, ReplayCircleFilled } from "@mui/icons-material"
-import { useState } from "react"
-import { RecipeSelector } from "@/components/editable/RecipeSelector"
+import { Cancel, Close, Remove, ReplayCircleFilled } from "@mui/icons-material"
+import { ReactComponentElement, useState } from "react"
+import { buildRecipeSelector } from "@/components/editable/buildRecipeSelector"
 import { setters } from "@/data/fb"
 import { prop } from "@/data/paramObsBuilders/prop"
 import {
@@ -30,6 +30,7 @@ import {
 import { clone, sortBy } from "lodash-es"
 import { CopyToClipboard } from "react-copy-to-clipboard"
 import { ReplyIcon } from "@heroicons/react/solid"
+import { EditableComponent } from "@/data/fieldDisplayComponents/fieldDisplayComponentsBuilders"
 
 const dataFn = () => {
   return {
@@ -97,15 +98,24 @@ const ShoppingListDisplay = ({ recipes }: { recipes: Recipe[] }) => {
 const RecipeDisplay = ({
   recipe,
   replace,
+  RecipeSelector,
 }: {
   recipe: Recipe
-  replace: (newRecipe: Recipe) => Promise<void>
+  replace: (newRecipe: Recipe) => void
+  RecipeSelector: React.FC<{ update: (recipe: Recipe) => void }>
 }) => {
   const [isReplacing, setIsReplacing] = useState(false)
 
   let display = (
     <div>
-      <div className="text-lg font-extrabold">Replacing:</div>
+      <div className="flex items-center">
+        <div className="text-lg font-extrabold">Replacing:</div>
+        <div>
+          <IconButton onClick={() => setIsReplacing(false)}>
+            <Cancel></Cancel>
+          </IconButton>
+        </div>
+      </div>
       <RecipeSelector
         update={(recipe) => {
           replace(recipe)
@@ -181,20 +191,27 @@ const DayMealsDisplay = ({
   dayMeals,
   dayIndex,
   dayStartMs,
+  thisMealPlan,
 }: {
   dayMeals: DayMeals
   dayIndex: number
   dayStartMs: number
+  thisMealPlan: MealPlan
 }) => {
-  const buildReplaceFn = (recipeIndex: number) => async (newRecipe: Recipe) => {
-    const thisPlan = await dataFn().mealPlan
-    const days = thisPlan.days
-    days[dayIndex].recipes[recipeIndex] = {
-      ...newRecipe,
-      usedOn: Timestamp.fromMillis(dayStartMs),
+  const buildGetNewDaysForPlan =
+    (recipeIndex: number) => (newRecipe: Recipe) => {
+      const days = clone(thisMealPlan.days)
+      days[dayIndex].recipes[recipeIndex] = {
+        ...newRecipe,
+        usedOn: Timestamp.fromMillis(dayStartMs),
+      }
+      return days
     }
-    setters.mealPlan(thisPlan.uid, { days })
+  const buildReplaceFn = (recipeIndex: number) => (newRecipe: Recipe) => {
+    const newDays = buildGetNewDaysForPlan(recipeIndex)(newRecipe)
+    setters.mealPlan(thisMealPlan.uid, { days: newDays })
   }
+
   return (
     <div>
       <div className="flex items-center gap-2">
@@ -219,11 +236,17 @@ const DayMealsDisplay = ({
       </div>
       <div className="flex flex-col gap-5">
         {dayMeals.recipes.map((recipe, index) => {
+          const RecipeSelector = buildRecipeSelector(
+            buildGetNewDaysForPlan(index),
+            thisMealPlan.startOn.toMillis()
+          )
+
           return (
             <RecipeDisplay
-              replace={buildReplaceFn(index)}
               recipe={recipe}
               key={index}
+              replace={buildReplaceFn(index)}
+              RecipeSelector={RecipeSelector as any}
             ></RecipeDisplay>
           )
         })}
@@ -233,19 +256,14 @@ const DayMealsDisplay = ({
 }
 
 const dayInMs = 24 * 60 * 60 * 1000
-const AllDayMealsDisplay = ({
-  daysMealsObjs,
-  weekStartMs,
-}: {
-  daysMealsObjs: DayMeals[]
-  weekStartMs: number
-}) => {
+const AllDayMealsDisplay = ({ thisMealPlan }: { thisMealPlan: MealPlan }) => {
   return (
     <div className="flex flex-col gap-5">
-      {daysMealsObjs.map((dayMeals, dayIndex) => {
-        const dayStartMs = weekStartMs + dayIndex * dayInMs
+      {thisMealPlan.days.map((dayMeals, dayIndex) => {
+        const dayStartMs = thisMealPlan.startOn.toMillis() + dayIndex * dayInMs
         return (
           <DayMealsDisplay
+            thisMealPlan={thisMealPlan}
             key={dayMeals.dayIndex}
             dayMeals={dayMeals}
             dayIndex={dayIndex}
@@ -324,10 +342,7 @@ const MealPlanDisplay = component(dataFn, ({ mealPlan }) => {
           </Accordion>
         </div>
         <div>
-          <AllDayMealsDisplay
-            weekStartMs={mealPlan.startOn?.toMillis()}
-            daysMealsObjs={mealPlan.days}
-          ></AllDayMealsDisplay>
+          <AllDayMealsDisplay thisMealPlan={mealPlan}></AllDayMealsDisplay>
         </div>
       </div>
     </div>

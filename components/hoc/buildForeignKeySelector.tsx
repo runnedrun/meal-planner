@@ -1,7 +1,7 @@
 import { ParamaterizedObservable } from "@/data/ParamaterizedObservable"
 import { prop } from "@/data/paramObsBuilders/prop"
 import { component } from "@/views/view_builder/component"
-import { isArray } from "lodash-es"
+import { isArray, sortBy } from "lodash-es"
 import { AdminComboxBox, AutocompleteOptions } from "./AdminComboBox"
 
 export const buildForeignKeySelector = <
@@ -36,13 +36,12 @@ export const buildForeignKeySelector = <
 
         return a
       }
-      const options = possibleValues
-        .map((_) => _.uid)
-        .sort((a, b) => {
-          return autocompleteOptions
-            .renderLabel(getValue(a))
-            .localeCompare(autocompleteOptions.renderLabel(getValue(b)))
-        })
+
+      const sortedPossibleValues = autocompleteOptions.sortOptions
+        ? sortBy(possibleValues, autocompleteOptions.sortOptions)
+        : possibleValues
+
+      const options = sortedPossibleValues.map((_) => _.uid)
 
       return (
         <AdminComboxBox

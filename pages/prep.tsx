@@ -14,7 +14,11 @@ const prepRecipes = () => {
 }
 
 export const prep = () => {
-  return <div onClick={prepRecipes}>Prep</div>
+  return (
+    <div className="text-black" onClick={prepRecipes}>
+      Prep
+    </div>
+  )
 }
 
 export default prep

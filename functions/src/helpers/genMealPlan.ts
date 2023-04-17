@@ -213,6 +213,10 @@ const scoreTypeConsistency = (dayMeals: DayMeals) => {
   return allNotEastern || allEastern ? 4 : 0
 }
 
+const scoreVegMeatBalance = (dayMeals: DayMeals) => {
+  return dayMeals.recipes.some((_) => _.veg) ? 5 : 0
+}
+
 export const scoreDayMeals = (
   dayMeals: DayMeals[],
   weekStartMs: number,
@@ -255,12 +259,17 @@ export const scoreDayMeals = (
     scoreTypeConsistency(dayMeal)
   )
 
+  const avgVegMeatScore = getAverageScoreForPath(dayMeals, (dayMeal) =>
+    scoreVegMeatBalance(dayMeal)
+  )
+
   const scores = [
     avgRatingScore,
     avgRecencyScore,
     avgIngredientRecencyScore,
     avgSpecialTagScore,
     avgTypeConsistencyScore,
+    avgVegMeatScore,
   ]
 
   return {
@@ -275,6 +284,12 @@ export const scoreDayMeals = (
   }
 }
 
+export const getDayMealsFromMealPlans = (mealPlans: MealPlan[]) => {
+  return mealPlans.flatMap((plan) => {
+    return plan.days
+  })
+}
+
 export const genIdealMealPlan = (
   allPossibleRecipes: Recipe[],
   previousMealPlans: MealPlan[],
@@ -283,9 +298,7 @@ export const genIdealMealPlan = (
 ): PathDayMeals[] => {
   const recipesClone = deepCopy(allPossibleRecipes)
 
-  const historicalMeals = previousMealPlans.flatMap((plan) => {
-    return plan.days
-  })
+  const historicalMeals = getDayMealsFromMealPlans(previousMealPlans)
 
   const beam = new BeamSearch({
     childrenGenerator: ({ path }: { path: PathDayMeals[] }) => {

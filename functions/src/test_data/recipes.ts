@@ -518,12 +518,6 @@ export const recipes: Recipe[] = [
     ingredients: [I.groundPork, I.chineseCabbage, I.chickenBroth],
   },
   {
-    uid: "51" as ForeignKey<"recipe">,
-    name: "pork ball soup",
-    tags: [RecipeTag.Eastern],
-    ingredients: [I.groundPork, I.chineseCabbage, I.chickenBroth],
-  },
-  {
     uid: "52" as ForeignKey<"recipe">,
     name: "dapan ji",
     tags: [RecipeTag.Eastern],
@@ -531,12 +525,6 @@ export const recipes: Recipe[] = [
   },
   {
     uid: "53" as ForeignKey<"recipe">,
-    name: "morrocan chicken with migros sauce",
-    tags: [RecipeTag.Western],
-    ingredients: [I.chickenChunks, I.morrocanSauce, I.onion],
-  },
-  {
-    uid: "53_1" as ForeignKey<"recipe">,
     name: "morrocan chicken with migros sauce",
     tags: [RecipeTag.Western],
     ingredients: [I.chickenChunks, I.morrocanSauce, I.onion],

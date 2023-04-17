@@ -28,6 +28,13 @@ export const logMealPlan = (mealPlan: PathDayMeals[]) => {
   mealPlan.forEach(logDayMeals)
 }
 
+export const getAllRecentMealPlans = () =>
+  filtered(
+    "mealPlan",
+    { archived: staticValue(false) },
+    { orderBy: { createdAt: staticValue("asc") } }
+  )
+
 export const genPlan = async (): Promise<MealPlan> => {
   const now = moment()
   // const sundayForCurrentWeek = now.clone().startOf("week")
@@ -38,11 +45,7 @@ export const genPlan = async (): Promise<MealPlan> => {
     millisecond: 0,
   })
 
-  const prevMealPlans = await filtered(
-    "mealPlan",
-    { archived: staticValue(false) },
-    { orderBy: { createdAt: staticValue("asc") } }
-  )
+  const prevMealPlans = await getAllRecentMealPlans()
 
   const plan = genIdealMealPlan(recipes, prevMealPlans, dayStart.valueOf())
 

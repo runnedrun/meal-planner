@@ -13,6 +13,7 @@ export type AutocompleteOptions<OptionType, IsMultiselect extends boolean> = {
   renderLabel: (value: OptionType) => string
   inputLabel?: string
   multiSelect?: IsMultiselect
+  sortOptions?: (options: OptionType) => OptionType[]
 }
 
 export const AdminComboxBox = <
