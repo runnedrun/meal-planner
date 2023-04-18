@@ -18,6 +18,7 @@ export enum I {
   tigerShrimp = "tiger shrimp",
   ribs = "ribs",
   porkHock = "pork hock",
+  mussels = "mussels",
 
   // frozen
   frozenSeafoodMix = "frozen seafood mix",

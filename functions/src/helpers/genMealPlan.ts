@@ -1,6 +1,7 @@
 import { discourageDuplicationFor, I } from "@/data/types/Ingredients"
 import { DayMeals, MealPlan, MealPlanRecipe } from "@/data/types/MealPlan"
 import { exclusiveOptionalTags, Recipe, RecipeTag } from "@/data/types/Recipe"
+import { objKeys } from "@/helpers/objKeys"
 import { deepCopy } from "@firebase/util"
 import { Timestamp } from "firebase/firestore"
 import {
@@ -11,6 +12,7 @@ import {
   shuffle,
   sortBy,
   sum,
+  sumBy,
 } from "lodash-es"
 import { BeamSearch } from "./BeamSearch"
 import { DayTags } from "./DayTags"
@@ -22,8 +24,9 @@ export interface PathDayMeals extends DayMeals {
 const twentyFourHours = 24 * 60 * 60 * 1000
 
 const nDays = 5
+const minFillingLevel = 7
 
-const generateAllPossibleDayMeals = (
+export const generateAllPossibleDayMeals = (
   possibleRecipes: Recipe[],
   dayIndex: number,
   currentDayTimestamp: Timestamp
@@ -40,7 +43,7 @@ const generateAllPossibleDayMeals = (
   })
   const [standalone, nonStandalone] = partition(
     recipesWithRequiredTags,
-    (_) => _.standalone
+    (_) => _.fillingLevel === 10
   )
 
   const standaloneDayMeals = standalone.map(
@@ -76,7 +79,31 @@ const generateAllPossibleDayMeals = (
     })
   })
 
-  return possibleDayMeals
+  const allDayMealsWith4MealDays = [] as DayMeals[]
+
+  const eligible4DishVegRecipes = vegRecipes.filter(
+    (_) => (_.fillingLevel || 3) > 1
+  )
+
+  possibleDayMeals.forEach((meals) => {
+    const fillingScoreSum = sumBy(meals.recipes, (_) => _.fillingLevel || 3)
+    if (fillingScoreSum < minFillingLevel) {
+      const recipesToAdd = [...nonVegRecipes, ...eligible4DishVegRecipes]
+      recipesToAdd.forEach((recipe) => {
+        allDayMealsWith4MealDays.push({
+          recipes: [
+            ...meals.recipes,
+            { ...recipe, usedOn: currentDayTimestamp },
+          ],
+          dayIndex,
+        })
+      })
+    } else {
+      allDayMealsWith4MealDays.push(meals)
+    }
+  })
+
+  return allDayMealsWith4MealDays
 }
 
 const getLastUsedFromPath = (path: DayMeals[]) => {
@@ -126,7 +153,7 @@ const getMostRecentIngredientLastUsed = (
   return last(lastUsed)
 }
 
-const getRecencyScoreForDayMeal = (
+const scoreRecency = (
   dayMeal: DayMeals,
   dayStartMs: number,
   pathUntilYesterday: DayMeals[]
@@ -141,7 +168,9 @@ const getRecencyScoreForDayMeal = (
     return acc + Math.log(dayStartMs - recipeLastUsed + 1)
   }, 0)
 
-  return recencyScore / 10
+  const avgRecencyScore = recencyScore / dayMeal.recipes.length
+
+  return avgRecencyScore / 3
 }
 
 export const getIngredientRecencyScoreForDayMeal = (
@@ -182,7 +211,7 @@ export const getIngredientRecencyScoreForDayMeal = (
   return (-1 * dupIngredientDetractionScore) / 10
 }
 
-const getSpecialTagScoreForDayMeals = (dayMeals: DayMeals) => {
+const scoreSpecialTags = (dayMeals: DayMeals) => {
   return dayMeals.recipes.some((recipe) => {
     return recipe.tags?.includes(RecipeTag.Special)
   })
@@ -217,71 +246,63 @@ const scoreVegMeatBalance = (dayMeals: DayMeals) => {
   return dayMeals.recipes.some((_) => _.veg) ? 5 : 0
 }
 
+const scoreNumberOfRecipes = (dayMeals: DayMeals) => {
+  return dayMeals.recipes.length > 3 ? -1 : 0
+}
+
+const scoreFillingLevel = (dayMeals: DayMeals) => {
+  return sumBy(dayMeals.recipes, (_) => _.fillingLevel || 3) < minFillingLevel
+    ? -5
+    : 0
+}
+
+const scoreRatings = (dayMeals: DayMeals) => {
+  const dgClear = dayMeals.recipes.some((_) => (_.dgScore || 3) > 2)
+  const xqClear = dayMeals.recipes.some((_) => (_.xqScore || 3) > 2)
+  return dgClear && xqClear ? 0 : -2
+}
+
+type DayMealScorer = (dayMeals: DayMeals, i: number) => number
+
+const buildPathScorer =
+  (scorers: Record<string, DayMealScorer>) => (path: DayMeals[]) => {
+    const scores = {} as Record<string, number>
+    objKeys(scorers).forEach((scorerName) => {
+      const scorer = scorers[scorerName]
+      scores[scorerName] = getAverageScoreForPath(path, scorer)
+    })
+
+    return {
+      sumScore: sum(Object.values(scores)),
+      allScores: scores,
+    }
+  }
+
 export const scoreDayMeals = (
   dayMeals: DayMeals[],
   weekStartMs: number,
   historicalMeals: DayMeals[]
 ) => {
-  const avgXqScore = getAverageScoreForPath(dayMeals, (dayMeal) =>
-    sum(dayMeal.recipes.map((_) => _.xqScore || 2.5))
-  )
-
-  const avgDgScore = getAverageScoreForPath(dayMeals, (dayMeal) =>
-    sum(dayMeal.recipes.map((_) => _.dgScore || 2.5))
-  )
-
-  const avgRatingScore = (avgXqScore + avgDgScore) / 2
-
-  const avgRecencyScore = getAverageScoreForPath(dayMeals, (dayMeal, i) => {
-    return getRecencyScoreForDayMeal(
-      dayMeal,
-      i * twentyFourHours + weekStartMs,
-      [...historicalMeals, ...dayMeals.slice(0, i)]
-    )
-  })
-
-  const avgIngredientRecencyScore = getAverageScoreForPath(
-    dayMeals,
-    (dayMeal, i) => {
+  return buildPathScorer({
+    scoreRatings,
+    scoreRecency: (dayMeal, i) =>
+      scoreRecency(dayMeal, i * twentyFourHours + weekStartMs, [
+        ...historicalMeals,
+        ...dayMeals.slice(0, i),
+      ]),
+    ingredientRecency: (dayMeal, i) => {
       return getIngredientRecencyScoreForDayMeal(
         dayMeal,
         dayMeal.dayIndex * twentyFourHours + weekStartMs,
         [...historicalMeals, ...dayMeals.slice(0, i + 1)]
       )
-    }
-  )
-
-  const avgSpecialTagScore = getAverageScoreForPath(dayMeals, (dayMeal) =>
-    getSpecialTagScoreForDayMeals(dayMeal)
-  )
-
-  const avgTypeConsistencyScore = getAverageScoreForPath(dayMeals, (dayMeal) =>
-    scoreTypeConsistency(dayMeal)
-  )
-
-  const avgVegMeatScore = getAverageScoreForPath(dayMeals, (dayMeal) =>
-    scoreVegMeatBalance(dayMeal)
-  )
-
-  const scores = [
-    avgRatingScore,
-    avgRecencyScore,
-    avgIngredientRecencyScore,
-    avgSpecialTagScore,
-    avgTypeConsistencyScore,
-    avgVegMeatScore,
-  ]
-
-  return {
-    sumScore: sum(scores),
-    allScores: {
-      avgRatingScore,
-      avgRecencyScore,
-      avgIngredientRecencyScore,
-      avgSpecialTagScore,
-      avgTypeConsistencyScore,
     },
-  }
+    scoreSpecialTags,
+    scoreTypeConsistency,
+    scoreVegMeatBalance,
+    scoreNumberOfRecipes,
+    scoreFillingLevel,
+  })(dayMeals)
 }
 
 export const getDayMealsFromMealPlans = (mealPlans: MealPlan[]) => {

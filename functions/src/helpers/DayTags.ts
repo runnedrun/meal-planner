@@ -4,7 +4,7 @@ type DayTags = Record<number, { tags: RecipeTag[] }>
 
 // Sunday = 0
 export const DayTags: DayTags = {
-  0: { tags: [RecipeTag.Special] },
+  0: { tags: [] },
   1: { tags: [] },
   2: { tags: [] },
   3: { tags: [] },

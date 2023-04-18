@@ -61,7 +61,7 @@ const initAuth = () => {
     config.firebaseAuthEmulatorHost = process.env.FIREBASE_AUTH_EMULATOR_HOST
   }
 
-  // init(config)
+  init(config)
 }
 
 export default initAuth

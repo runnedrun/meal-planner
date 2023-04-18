@@ -1,9 +1,13 @@
 import { ForeignKey } from "@/data/baseTypes/ForeignKey"
 import { I } from "@/data/types/Ingredients"
 import { DayMeals, MealPlan, MealPlanRecipe } from "@/data/types/MealPlan"
-import { RecipeTag } from "@/data/types/Recipe"
-import { scoreDayMeals } from "@/functions/src/helpers/genMealPlan"
+import { Recipe, RecipeTag } from "@/data/types/Recipe"
+import {
+  generateAllPossibleDayMeals,
+  scoreDayMeals,
+} from "@/functions/src/helpers/genMealPlan"
 import { Timestamp } from "firebase/firestore"
+import { maxBy } from "lodash-es"
 
 describe("score as expected", () => {
   it("should score ingredient recency", () => {
@@ -305,5 +309,63 @@ describe("score as expected", () => {
     const scoresWithoutDups = scoreDayMeals(latestPlan, start, [])
     console.log("scores", scoresWithoutDups, scoresWithDups)
     expect(scoresWithDups.sumScore).toBeLessThan(scoresWithoutDups.sumScore)
+  })
+  it("should generate 4 recipe days if the combined filling score is less than 7", () => {
+    const recipes = [
+      {
+        uid: "1" as ForeignKey<"recipe">,
+        fillingLevel: 1,
+        veg: true,
+        tags: [],
+        ingredients: [],
+      } as Recipe,
+      {
+        uid: "2" as ForeignKey<"recipe">,
+        fillingLevel: 1,
+        tags: [],
+        ingredients: [],
+      } as Recipe,
+      {
+        uid: "3" as ForeignKey<"recipe">,
+        fillingLevel: 3,
+        tags: [],
+        ingredients: [],
+      } as Recipe,
+      {
+        uid: "4" as ForeignKey<"recipe">,
+        fillingLevel: 4,
+        tags: [],
+        ingredients: [],
+      } as Recipe,
+    ]
+
+    const possibleMeals = generateAllPossibleDayMeals(
+      recipes,
+      0,
+      Timestamp.now()
+    )
+
+    console.log(
+      "possibel",
+      possibleMeals.map((_) => _.recipes.map((_) => _.uid))
+    )
+    const has4MealDay = possibleMeals.some((_) => _.recipes.length === 4)
+
+    expect(possibleMeals).toHaveLength(7)
+    expect(has4MealDay).toBe(true)
+
+    const scores = possibleMeals.map((_) => ({
+      score: scoreDayMeals([_], 0, []).sumScore,
+      meal: _,
+    }))
+
+    // make sure that less recipes get more points
+
+    const maxScore = maxBy(scores, (_) => _.score)
+    const maxMeal = maxScore.meal
+
+    console.log("scores", maxScore)
+
+    expect(maxMeal.recipes).toHaveLength(3)
   })
 })

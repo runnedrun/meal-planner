@@ -8,6 +8,7 @@ export const recipes: Recipe[] = [
   {
     uid: "1" as ForeignKey<"recipe">,
     name: "Steamed Chicken Salad with hardboiled eggs",
+    fillingLevel: 2,
     tags: [RecipeTag.Fast, RecipeTag.Western],
     notes:
       "brown the chicken in the instant pot first, with garlic and salt, both sides. then place on the steamer trivet and steam for 13 minutes on high.",
@@ -26,6 +27,7 @@ export const recipes: Recipe[] = [
   {
     uid: "2" as ForeignKey<"recipe">,
     name: "Korean Pork Strips with Kimchi",
+    fillingLevel: 4,
     tags: [RecipeTag.Eastern],
     ingredients: [I.porkStrips, I.kimchi, I.onion, I.gochujang],
   },
@@ -44,6 +46,7 @@ export const recipes: Recipe[] = [
   {
     uid: "3" as ForeignKey<"recipe">,
     name: "Pork Stew with corn and butternut squash",
+    fillingLevel: 4,
     tags: [RecipeTag.Fast, RecipeTag.Western],
     ingredients: [
       I.stewPork,
@@ -58,6 +61,7 @@ export const recipes: Recipe[] = [
   {
     uid: "4" as ForeignKey<"recipe">,
     name: "Taiwanese Chicken in Air Fryer",
+    fillingLevel: 3,
     notes:
       "marinade the chicken with soy, 5 spice,  hua jiao oil, and shaoxing, then dust with white pepper, cuihong, 5 spice and salt",
     tags: [RecipeTag.Eastern],
@@ -66,42 +70,49 @@ export const recipes: Recipe[] = [
   {
     uid: "5" as ForeignKey<"recipe">,
     name: "Shrimp with Peppers and eggs",
+    fillingLevel: 3,
     tags: [RecipeTag.Eastern],
     ingredients: [I.bigShrimp, I.garlic, I.eggs, I.qingjiao, I.qingjiao],
   },
   {
     uid: "6" as ForeignKey<"recipe">,
     name: "Ground Pork with Chopped Mushrooms and Tofu",
+    fillingLevel: 3,
     tags: [RecipeTag.Eastern],
     ingredients: [I.tofu, I.onion, I.mushrooms, I.groundPork],
   },
   {
     uid: "7" as ForeignKey<"recipe">,
     name: "Sausage with tomato sauce and pasta",
+    fillingLevel: 5,
     tags: [RecipeTag.Western],
     ingredients: [I.sausage, I.onion, I.bigTomatoes, I.chickenBroth],
   },
   {
     uid: "8" as ForeignKey<"recipe">,
     name: "Coke chicken",
+    fillingLevel: 2,
     tags: [RecipeTag.Eastern, RecipeTag.Fast],
     ingredients: [I.coke, I.chickenWings],
   },
   {
     uid: "9" as ForeignKey<"recipe">,
     name: "Light sauce tofu with ground pork",
+    fillingLevel: 3,
     tags: [RecipeTag.Eastern],
     ingredients: [I.tofu, I.groundPork, I.onion, I.ginger],
   },
   {
     uid: "9_1" as ForeignKey<"recipe">,
     name: "Sichuan Cauliflower with pork belly",
+    fillingLevel: 2,
     tags: [RecipeTag.Eastern],
     ingredients: [I.cauliflower, I.porkBelly],
   },
   {
     uid: "9_2" as ForeignKey<"recipe">,
     name: "Roasted Cauliflower with a bit of cui hong",
+    fillingLevel: 1,
     veg: true,
     tags: [RecipeTag.Eastern, RecipeTag.Fast],
     ingredients: [I.cauliflower],
@@ -109,6 +120,7 @@ export const recipes: Recipe[] = [
   {
     uid: "9_3" as ForeignKey<"recipe">,
     name: "Steamed Cauliflower with salt",
+    fillingLevel: 1,
     veg: true,
     tags: [RecipeTag.Western, RecipeTag.Fast],
     ingredients: [I.cauliflower],
@@ -116,6 +128,7 @@ export const recipes: Recipe[] = [
   {
     uid: "10" as ForeignKey<"recipe">,
     name: "Stir fried Bokchoi with garlic and salt",
+    fillingLevel: 1,
     veg: true,
     tags: [RecipeTag.Eastern],
     ingredients: [I.bokchoi, I.garlic],
@@ -123,6 +136,7 @@ export const recipes: Recipe[] = [
   {
     uid: "11" as ForeignKey<"recipe">,
     name: "Stir fried spinach",
+    fillingLevel: 1,
     veg: true,
     tags: [RecipeTag.Eastern],
     ingredients: [I.frozenSpinach],
@@ -130,6 +144,7 @@ export const recipes: Recipe[] = [
   {
     uid: "11_1" as ForeignKey<"recipe">,
     name: "Stir fried cabbage with spice and vinegar",
+    fillingLevel: 1,
     veg: true,
     tags: [RecipeTag.Eastern],
     ingredients: [I.whiteCabbage],
@@ -137,36 +152,42 @@ export const recipes: Recipe[] = [
   {
     uid: "12" as ForeignKey<"recipe">,
     name: "Eggplant + peppers + ground pork with soy+oyster",
+    fillingLevel: 3,
     tags: [RecipeTag.Eastern],
     ingredients: [I.eggplant, I.qingjiao, I.groundPork],
   },
   {
     uid: "13" as ForeignKey<"recipe">,
     name: "chopped green beans with ground pork and zhacai",
+    fillingLevel: 3,
     tags: [RecipeTag.Eastern],
     ingredients: [I.eggplant, I.greenBeans, I.groundPork, I.zhacai],
   },
   {
     uid: "14" as ForeignKey<"recipe">,
     name: "pork strips and mushrooms with oyster+soy",
+    fillingLevel: 3,
     tags: [RecipeTag.Eastern],
     ingredients: [I.porkStrips, I.mushrooms],
   },
   {
     uid: "15" as ForeignKey<"recipe">,
     name: "pork strips and onions with oyster+soy",
+    fillingLevel: 3,
     tags: [RecipeTag.Eastern],
     ingredients: [I.porkStrips, I.onion],
   },
   {
     uid: "15_1" as ForeignKey<"recipe">,
     name: "pork belly and eggs with doubanjiang",
+    fillingLevel: 3,
     tags: [RecipeTag.Eastern],
     ingredients: [I.porkStrips, I.onion, I.eggs],
   },
   {
     uid: "16" as ForeignKey<"recipe">,
     name: "braised chicken cooked in scallion oil, with white pepper, soy, osyter",
+    fillingLevel: 3,
     notes:
       "cook the spring onions whole in the oil then remove with chopsticks.",
     tags: [RecipeTag.Eastern],
@@ -175,6 +196,7 @@ export const recipes: Recipe[] = [
   {
     uid: "17" as ForeignKey<"recipe">,
     name: "mapo doufu with huajiao oil, doubanjiang and laoganma",
+    fillingLevel: 4,
     tags: [RecipeTag.Eastern],
     notes:
       "marinade pork ahead of time with cooking wine, oyster, soy and cooking wine.",
@@ -190,6 +212,7 @@ export const recipes: Recipe[] = [
   {
     uid: "18" as ForeignKey<"recipe">,
     name: "cumin chicken",
+    fillingLevel: 4,
     tags: [RecipeTag.Eastern],
     notes:
       "marinade chicken with cumin, white pepper, oyster, soy and cooking wine",
@@ -198,12 +221,14 @@ export const recipes: Recipe[] = [
   {
     uid: "19" as ForeignKey<"recipe">,
     name: "celery with pork belly and thin tofu",
+    fillingLevel: 2,
     tags: [RecipeTag.Eastern],
     ingredients: [I.celery, I.porkBelly, I.tofu],
   },
   {
     uid: "20" as ForeignKey<"recipe">,
     name: "hong kong style borscht",
+    fillingLevel: 3,
     notes:
       "instant pot the pork for 12 minutes with soy and osyter, then add everything else and slow cook for an hour. Full recipe: https://www.themissinglokness.com/2018/01/10/hong-kong-style-borscht-soup/",
     tags: [RecipeTag.Eastern, RecipeTag.Fast],
@@ -219,6 +244,7 @@ export const recipes: Recipe[] = [
   {
     uid: "21" as ForeignKey<"recipe">,
     name: "instant pot thai curry",
+    fillingLevel: 3,
     notes:
       "Brown pork in instant pot with onions, then add any kind of thai curry paste and enough coconut milk to mostly cover and cook for 18 minutes. Add the eggplant and other veg after cooking and let sit for an hour.",
     tags: [RecipeTag.Eastern, RecipeTag.Fast],
@@ -227,6 +253,7 @@ export const recipes: Recipe[] = [
   {
     uid: "22" as ForeignKey<"recipe">,
     name: "split pea soup",
+    fillingLevel: 4,
     notes:
       "1 bag of peas is about 1000 ml of water.Add some white pepper and some hot sauce. Optional douya. Cook for 30 minutes to really soften the ham hock.",
     tags: [RecipeTag.Western, RecipeTag.Fast],
@@ -241,6 +268,7 @@ export const recipes: Recipe[] = [
   {
     uid: "23" as ForeignKey<"recipe">,
     name: "cajun pasta",
+    fillingLevel: 5,
     notes:
       "1 bag of peas is about 500 ml of water.Add some white pepper and some hot sauce. Cook for 15 minutes.",
     tags: [RecipeTag.Western, RecipeTag.Fast],
@@ -255,6 +283,7 @@ export const recipes: Recipe[] = [
   {
     uid: "24" as ForeignKey<"recipe">,
     name: "Instant pot japanese curry",
+    fillingLevel: 5,
     tags: [RecipeTag.Eastern, RecipeTag.Fast],
     ingredients: [
       I.stewPork,
@@ -269,6 +298,7 @@ export const recipes: Recipe[] = [
   {
     uid: "25" as ForeignKey<"recipe">,
     name: "Hawaian pizza pasta",
+    fillingLevel: 5,
     tags: [RecipeTag.Western],
     ingredients: [
       I.cannedTomatoes,
@@ -284,6 +314,7 @@ export const recipes: Recipe[] = [
   {
     uid: "27" as ForeignKey<"recipe">,
     name: "Tapioca pizza",
+    fillingLevel: 5,
     tags: [RecipeTag.Western, RecipeTag.Special],
     ingredients: [
       I.chorizo,
@@ -299,6 +330,7 @@ export const recipes: Recipe[] = [
   {
     uid: "28" as ForeignKey<"recipe">,
     name: "Instant pot Mushroom Stroganoff",
+    fillingLevel: 4,
     tags: [RecipeTag.Western, RecipeTag.Fast],
     notes: `brown pork and onions, add dried mushrooms and real mushrooms. Add salt and some cooking wine (or real wine). Add Cornstarch. 5 minutes at high pressure. Add coco yog and soy sauce at the end`,
     ingredients: [
@@ -313,6 +345,7 @@ export const recipes: Recipe[] = [
   {
     uid: "29" as ForeignKey<"recipe">,
     name: "Chicken, tomato and chorizo bake with basalmic",
+    fillingLevel: 4,
     tags: [RecipeTag.Western, RecipeTag.Fast],
     notes: `throw everthing into a baking tin and pour olive oil and basalmic on top. Serve with rice.`,
     ingredients: [
@@ -326,6 +359,7 @@ export const recipes: Recipe[] = [
   {
     uid: "30" as ForeignKey<"recipe">,
     name: "Cuban Picadillo",
+    fillingLevel: 4,
     tags: [RecipeTag.Western],
     notes: `heat chorizo in oil with garlic. Brown pork. Add tomatoes, bay leaves, cinnamon and cider vinegar. Simmer for 30, add olives and raisins.`,
     ingredients: [
@@ -341,6 +375,7 @@ export const recipes: Recipe[] = [
   {
     uid: "31" as ForeignKey<"recipe">,
     name: "douya with onions",
+    fillingLevel: 1,
     tags: [RecipeTag.Eastern],
     veg: true,
     ingredients: [I.beanSprouts, I.onion],
@@ -348,18 +383,21 @@ export const recipes: Recipe[] = [
   {
     uid: "31_1" as ForeignKey<"recipe">,
     name: "Steamed chicken with light soy sauce",
+    fillingLevel: 2,
     tags: [RecipeTag.Eastern],
     ingredients: [I.wholeChicken, I.ginger],
   },
   {
     uid: "32" as ForeignKey<"recipe">,
     name: "Steamed egg with scallions",
+    fillingLevel: 1,
     tags: [RecipeTag.Eastern],
     ingredients: [I.eggs, I.springOnions],
   },
   {
     uid: "32_1" as ForeignKey<"recipe">,
     name: "Hui guo rou",
+    fillingLevel: 4,
     tags: [RecipeTag.Eastern],
     notes: "boil sliced pork belly first",
     ingredients: [I.porkBelly, I.springOnions, I.onion],
@@ -367,12 +405,14 @@ export const recipes: Recipe[] = [
   {
     uid: "32_2" as ForeignKey<"recipe">,
     name: "spicy pork belly with bean sprouts",
+    fillingLevel: 4,
     tags: [RecipeTag.Eastern],
     ingredients: [I.porkBelly, I.springOnions, I.onion, I.beanSprouts],
   },
   {
     uid: "33" as ForeignKey<"recipe">,
     name: "pad thai",
+    fillingLevel: 4,
     tags: [RecipeTag.Eastern],
     ingredients: [
       I.chickenChunks,
@@ -386,12 +426,14 @@ export const recipes: Recipe[] = [
   {
     uid: "34" as ForeignKey<"recipe">,
     name: "Dan jiao",
+    fillingLevel: 4,
     tags: [RecipeTag.Eastern],
     ingredients: [I.eggs, I.groundPork, I.ginger],
   },
   {
     uid: "35" as ForeignKey<"recipe">,
     name: "Dan jiao soup",
+    fillingLevel: 3,
     tags: [RecipeTag.Eastern],
     ingredients: [
       I.eggs,
@@ -404,6 +446,7 @@ export const recipes: Recipe[] = [
   {
     uid: "36" as ForeignKey<"recipe">,
     name: "Shrimp cakes",
+    fillingLevel: 2,
     tags: [RecipeTag.Eastern],
     notes:
       "mix two eggs with cornstarch, chopped shrimp and green onions, then fry or air fry",
@@ -412,12 +455,14 @@ export const recipes: Recipe[] = [
   {
     uid: "37" as ForeignKey<"recipe">,
     name: "Flat beans with ground pork",
+    fillingLevel: 2,
     tags: [RecipeTag.Eastern],
     ingredients: [I.groundPork, I.flatBeans],
   },
   {
     uid: "38" as ForeignKey<"recipe">,
     name: "Salad with tuna",
+    fillingLevel: 2,
     veg: true,
     tags: [RecipeTag.Eastern],
     ingredients: [I.cannedTuna, I.salad, I.avocado, I.cherryTomatoes],
@@ -425,30 +470,28 @@ export const recipes: Recipe[] = [
   {
     uid: "39" as ForeignKey<"recipe">,
     name: "Pork belly with flat beans and cuihong",
-    tags: [RecipeTag.Eastern],
-    ingredients: [I.porkBelly, I.flatBeans],
-  },
-  {
-    uid: "40" as ForeignKey<"recipe">,
-    name: "Pork belly with flat beans",
+    fillingLevel: 3,
     tags: [RecipeTag.Eastern],
     ingredients: [I.porkBelly, I.flatBeans],
   },
   {
     uid: "41" as ForeignKey<"recipe">,
     name: "Tomato with eggs",
+    fillingLevel: 2,
     tags: [RecipeTag.Eastern],
     ingredients: [I.bigTomatoes, I.eggs],
   },
   {
     uid: "42" as ForeignKey<"recipe">,
     name: "Qingjiao rousi",
+    fillingLevel: 3,
     tags: [RecipeTag.Eastern],
     ingredients: [I.porkStrips, I.qingjiao, I.qingjiao],
   },
   {
     uid: "43" as ForeignKey<"recipe">,
     name: "Miso eggplant",
+    fillingLevel: 2,
     veg: true,
     tags: [RecipeTag.Eastern],
     ingredients: [I.eggplant],
@@ -456,8 +499,8 @@ export const recipes: Recipe[] = [
   {
     uid: "44" as ForeignKey<"recipe">,
     name: "dry pot",
+    fillingLevel: 10,
     tags: [RecipeTag.Eastern],
-    standalone: true,
     ingredients: [
       I.bokchoi,
       I.onion,
@@ -472,7 +515,7 @@ export const recipes: Recipe[] = [
     uid: "45" as ForeignKey<"recipe">,
     name: "grill night with salad",
     tags: [RecipeTag.Eastern, RecipeTag.Special],
-    standalone: true,
+    fillingLevel: 10,
     ingredients: [
       I.sweetPotato,
       I.onion,
@@ -489,24 +532,28 @@ export const recipes: Recipe[] = [
   {
     uid: "46" as ForeignKey<"recipe">,
     name: "cumin ribs",
+    fillingLevel: 3,
     tags: [RecipeTag.Eastern, RecipeTag.Special],
     ingredients: [I.ribs],
   },
   {
     uid: "47" as ForeignKey<"recipe">,
     name: "Whole chicken coconut soup",
+    fillingLevel: 3,
     tags: [RecipeTag.Eastern],
     ingredients: [I.wholeChicken, I.ginger, I.tofu, I.coconutWater, I.heimoer],
   },
   {
     uid: "48" as ForeignKey<"recipe">,
     name: "Suan cai yu",
+    fillingLevel: 3,
     tags: [RecipeTag.Eastern],
     ingredients: [I.frozenFish, I.suancaiyuSauce],
   },
   {
     uid: "49" as ForeignKey<"recipe">,
     name: "stir fried flat beans, no meat",
+    fillingLevel: 1,
     tags: [RecipeTag.Eastern],
     veg: true,
     ingredients: [I.flatBeans, I.garlic],
@@ -514,24 +561,28 @@ export const recipes: Recipe[] = [
   {
     uid: "50" as ForeignKey<"recipe">,
     name: "pork ball soup",
+    fillingLevel: 3,
     tags: [RecipeTag.Eastern],
     ingredients: [I.groundPork, I.chineseCabbage, I.chickenBroth],
   },
   {
     uid: "52" as ForeignKey<"recipe">,
     name: "dapan ji",
+    fillingLevel: 4,
     tags: [RecipeTag.Eastern],
     ingredients: [I.chickenChunks, I.chickenWings, I.potatoes, I.onion],
   },
   {
     uid: "53" as ForeignKey<"recipe">,
     name: "morrocan chicken with migros sauce",
+    fillingLevel: 4,
     tags: [RecipeTag.Western],
     ingredients: [I.chickenChunks, I.morrocanSauce, I.onion],
   },
   {
     uid: "53_2" as ForeignKey<"recipe">,
     name: "Eggplant parmigiano",
+    fillingLevel: 4,
     tags: [RecipeTag.Western, RecipeTag.Special],
     ingredients: [
       I.mozarella,
@@ -544,8 +595,16 @@ export const recipes: Recipe[] = [
   {
     uid: "54" as ForeignKey<"recipe">,
     name: "Braised Pork Knuckle",
+    fillingLevel: 3,
     tags: [RecipeTag.Eastern],
     ingredients: [I.porkHock],
+  },
+  {
+    uid: "55" as ForeignKey<"recipe">,
+    name: "Mussels with white wine",
+    fillingLevel: 2,
+    tags: [RecipeTag.Western],
+    ingredients: [I.mussels],
   },
 ]
 

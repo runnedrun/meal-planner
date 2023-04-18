@@ -13,6 +13,8 @@ export enum RecipeTag {
 // are optional for that day
 export const exclusiveOptionalTags = [RecipeTag.Special]
 
+export type FillingLevel = 1 | 2 | 3 | 4 | 5 | 10
+
 export type Recipe = Model<
   "recipe",
   {
@@ -23,6 +25,6 @@ export type Recipe = Model<
     tags?: RecipeTag[]
     ingredients: I[]
     notes?: string
-    standalone?: boolean
+    fillingLevel?: FillingLevel
   }
 >
