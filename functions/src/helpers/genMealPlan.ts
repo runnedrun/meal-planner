@@ -309,7 +309,9 @@ export const genIdealMealPlan = (
 ): PathDayMeals[] => {
   const recipesClone = deepCopy(allPossibleRecipes)
 
-  const historicalMeals = getDayMealsFromMealPlans(previousMealPlans)
+  const historicalMeals = getDayMealsFromMealPlans(previousMealPlans).filter(
+    (_) => !_.ignored
+  )
 
   const beam = new BeamSearch({
     childrenGenerator: ({ path }: { path: PathDayMeals[] }) => {
