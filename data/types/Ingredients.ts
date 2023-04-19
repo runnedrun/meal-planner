@@ -177,6 +177,7 @@ export const migrosOrder = [
   I.tomatoPaste,
   I.peaPasta,
   I.morrocanSauce,
+  I.coconutWater,
 ]
 
 export const chineseSupermarketItems = [

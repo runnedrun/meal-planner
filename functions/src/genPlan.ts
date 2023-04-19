@@ -13,9 +13,9 @@ const logRecipe = (recipe: Recipe) => {
   console.log("name:", recipe.name)
   console.log("tags:", recipe.tags)
 }
-const logDayMeals = (dayMeals: PathDayMeals) => {
-  console.log("day:", dayMeals.dayIndex, dayMeals.score, dayMeals.scores)
-  console.log("requirements:", DayTags[dayMeals.dayIndex].tags)
+const logDayMeals = (dayMeals: PathDayMeals, i: number) => {
+  console.log("day:", dayMeals.score, dayMeals.scores)
+  console.log("requirements:", DayTags[i].tags)
   console.log("veg:")
   logRecipe(dayMeals.recipes[0])
   console.log("meat 1:")

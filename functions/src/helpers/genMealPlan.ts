@@ -4,16 +4,8 @@ import { exclusiveOptionalTags, Recipe, RecipeTag } from "@/data/types/Recipe"
 import { objKeys } from "@/helpers/objKeys"
 import { deepCopy } from "@firebase/util"
 import { Timestamp } from "firebase/firestore"
-import {
-  clone,
-  last,
-  memoize,
-  partition,
-  shuffle,
-  sortBy,
-  sum,
-  sumBy,
-} from "lodash-es"
+import { clone, last, partition, shuffle, sum, sumBy } from "lodash-es"
+import moment from "moment"
 import { BeamSearch } from "./BeamSearch"
 import { DayTags } from "./DayTags"
 
@@ -28,10 +20,10 @@ const minFillingLevel = 7
 
 export const generateAllPossibleDayMeals = (
   possibleRecipes: Recipe[],
-  dayIndex: number,
   currentDayTimestamp: Timestamp
 ) => {
-  const dayTags = DayTags[dayIndex]?.tags || []
+  const dayOfWeekIndex = moment(currentDayTimestamp.toMillis()).day()
+  const dayTags = DayTags[dayOfWeekIndex]?.tags || []
   const recipesWithRequiredTags = possibleRecipes.filter((recipe) => {
     const recipeHasAllTags = dayTags.every(
       (tag) => recipe.tags?.includes(tag) || exclusiveOptionalTags.includes(tag)
@@ -50,7 +42,7 @@ export const generateAllPossibleDayMeals = (
     (recipe) =>
       ({
         recipes: [{ ...recipe, usedOn: currentDayTimestamp }],
-        dayIndex,
+        startsOn: currentDayTimestamp,
       } as DayMeals)
   )
 
@@ -74,7 +66,6 @@ export const generateAllPossibleDayMeals = (
           { ...thisVegRecipe, usedOn: currentDayTimestamp },
           ...thisMeatCombo,
         ],
-        dayIndex,
       })
     })
   })
@@ -95,7 +86,6 @@ export const generateAllPossibleDayMeals = (
             ...meals.recipes,
             { ...recipe, usedOn: currentDayTimestamp },
           ],
-          dayIndex,
         })
       })
     } else {
@@ -293,7 +283,7 @@ export const scoreDayMeals = (
     ingredientRecency: (dayMeal, i) => {
       return getIngredientRecencyScoreForDayMeal(
         dayMeal,
-        dayMeal.dayIndex * twentyFourHours + weekStartMs,
+        i * twentyFourHours + weekStartMs,
         [...historicalMeals, ...dayMeals.slice(0, i + 1)]
       )
     },
@@ -330,7 +320,6 @@ export const genIdealMealPlan = (
 
       const allPossibleMeals = generateAllPossibleDayMeals(
         recipesClone,
-        currentDay,
         currentDayTimestamp
       )
 

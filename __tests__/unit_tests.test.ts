@@ -37,7 +37,6 @@ describe("score as expected", () => {
             ingredients: [I.garlic, I.onion],
           },
         ],
-        dayIndex: 0,
       },
       {
         recipes: [
@@ -64,7 +63,6 @@ describe("score as expected", () => {
             ingredients: [I.garlic, I.onion],
           },
         ],
-        dayIndex: 1,
       },
     ] as DayMeals[]
 
@@ -94,7 +92,6 @@ describe("score as expected", () => {
             ingredients: [I.garlic, I.onion],
           },
         ],
-        dayIndex: 0,
       },
       {
         recipes: [
@@ -121,7 +118,6 @@ describe("score as expected", () => {
             ingredients: [I.garlic, I.onion],
           },
         ],
-        dayIndex: 1,
       },
     ] as DayMeals[]
 
@@ -159,7 +155,6 @@ describe("score as expected", () => {
             ingredients: [I.garlic, I.onion],
           },
         ],
-        dayIndex: 0,
       },
       {
         recipes: [
@@ -221,7 +216,6 @@ describe("score as expected", () => {
             ingredients: [I.garlic, I.onion],
           },
         ],
-        dayIndex: 0,
       },
       {
         recipes: [
@@ -250,7 +244,6 @@ describe("score as expected", () => {
             ingredients: [I.garlic, I.onion],
           },
         ],
-        dayIndex: 1,
       },
     ] as DayMeals[]
 
@@ -294,14 +287,12 @@ describe("score as expected", () => {
     const prevDayMeals = [
       {
         recipes: reusedRecipes,
-        dayIndex: 0,
       },
     ] as DayMeals[]
 
     const latestPlan = [
       {
         recipes: reusedRecipes,
-        dayIndex: 0,
       },
     ] as DayMeals[]
 
@@ -339,11 +330,7 @@ describe("score as expected", () => {
       } as Recipe,
     ]
 
-    const possibleMeals = generateAllPossibleDayMeals(
-      recipes,
-      0,
-      Timestamp.now()
-    )
+    const possibleMeals = generateAllPossibleDayMeals(recipes, Timestamp.now())
 
     console.log(
       "possibel",

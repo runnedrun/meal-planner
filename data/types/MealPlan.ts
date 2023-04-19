@@ -9,7 +9,7 @@ export interface MealPlanRecipe extends Recipe {
 export type DayMeals = {
   recipes: MealPlanRecipe[]
   score?: number
-  dayIndex?: number
+  ignored: boolean
 }
 
 export type MealPlan = Model<

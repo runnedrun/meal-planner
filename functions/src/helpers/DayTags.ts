@@ -9,6 +9,6 @@ export const DayTags: DayTags = {
   2: { tags: [] },
   3: { tags: [] },
   4: { tags: [] },
-  5: { tags: [] },
+  5: { tags: [RecipeTag.Special] },
   6: { tags: [] },
 }

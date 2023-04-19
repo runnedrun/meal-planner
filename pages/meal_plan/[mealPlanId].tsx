@@ -16,7 +16,13 @@ import {
 import moment from "moment"
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore"
 import { Timestamp } from "firebase/firestore"
-import { Cancel, Close, Remove, ReplayCircleFilled } from "@mui/icons-material"
+import {
+  Cancel,
+  Close,
+  Remove,
+  ReplayCircleFilled,
+  Undo,
+} from "@mui/icons-material"
 import { ReactComponentElement, useState } from "react"
 import { buildRecipeSelector } from "@/components/editable/buildRecipeSelector"
 import { setters } from "@/data/fb"
@@ -215,18 +221,18 @@ const DayMealsDisplay = ({
   return (
     <div>
       <div className="flex items-center gap-2">
-        <div className="text-xl">
-          Day {dayIndex}, {moment(dayStartMs).format(momentFormatString)}
+        <div className="grow text-xl">
+          Day {dayIndex + 1}, {moment(dayStartMs).format(momentFormatString)}
         </div>
-        <div className="flex-grow">: {dayMeals.score}</div>
+        {/* <div className="flex-grow">: {dayMeals.score}</div> */}
         <div>
           <IconButton
             onClick={async () => {
               const thisPlan = await dataFn().mealPlan
-              const days = thisPlan.days
-              const newDays = days.filter((_, i) => i !== dayIndex)
+              const days = clone(thisPlan.days)
+              days[dayIndex].ignored = true
               setters.mealPlan(thisPlan.uid, {
-                days: newDays,
+                days,
               })
             }}
           >
@@ -261,10 +267,30 @@ const AllDayMealsDisplay = ({ thisMealPlan }: { thisMealPlan: MealPlan }) => {
     <div className="flex flex-col gap-5">
       {thisMealPlan.days.map((dayMeals, dayIndex) => {
         const dayStartMs = thisMealPlan.startOn.toMillis() + dayIndex * dayInMs
+        if (dayMeals.ignored) {
+          return (
+            <div className="flex items-center gap-2" key={dayIndex}>
+              <div className="text-lg font-bold">
+                Day {dayIndex + 1} ignored
+              </div>
+              <IconButton
+                onClick={() => {
+                  const daysClone = clone(thisMealPlan.days)
+                  daysClone[dayIndex].ignored = false
+                  setters.mealPlan(thisMealPlan.uid, {
+                    days: daysClone,
+                  })
+                }}
+              >
+                <Undo></Undo>
+              </IconButton>
+            </div>
+          )
+        }
         return (
           <DayMealsDisplay
             thisMealPlan={thisMealPlan}
-            key={dayMeals.dayIndex}
+            key={dayIndex}
             dayMeals={dayMeals}
             dayIndex={dayIndex}
             dayStartMs={dayStartMs}
@@ -277,8 +303,8 @@ const AllDayMealsDisplay = ({ thisMealPlan }: { thisMealPlan: MealPlan }) => {
 
 const MealPlanDisplay = component(dataFn, ({ mealPlan }) => {
   let copyableMealPlan = ""
-  mealPlan.days.forEach((day) => {
-    copyableMealPlan += `\n<div>Day ${day.dayIndex}</div><ul>`
+  mealPlan.days.forEach((day, i) => {
+    copyableMealPlan += `\n<div>Day ${i}</div><ul>`
     day.recipes.forEach((recipe) => {
       copyableMealPlan += `<li><div>${recipe.name}</div><ul>`
       if (recipe.notes) {
