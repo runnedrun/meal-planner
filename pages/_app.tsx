@@ -20,7 +20,7 @@ import "../styles/globals.css"
 import { logNavSteps } from "@/analytics/navigationSteps"
 
 init()
-// initAuth()
+initAuth()
 
 const clientSideEmotionCache = createEmotionCache()
 
