@@ -41,6 +41,7 @@ export const generateAllPossibleDayMeals = (
   const standaloneDayMeals = standalone.map(
     (recipe) =>
       ({
+        ignored: false,
         recipes: [{ ...recipe, usedOn: currentDayTimestamp }],
         startsOn: currentDayTimestamp,
       } as DayMeals)
@@ -62,6 +63,7 @@ export const generateAllPossibleDayMeals = (
   vegRecipes.forEach((thisVegRecipe) => {
     allPossibleMeatCombos.forEach((thisMeatCombo) => {
       possibleDayMeals.push({
+        ignored: false,
         recipes: [
           { ...thisVegRecipe, usedOn: currentDayTimestamp },
           ...thisMeatCombo,
@@ -70,30 +72,31 @@ export const generateAllPossibleDayMeals = (
     })
   })
 
-  const allDayMealsWith4MealDays = [] as DayMeals[]
+  // const allDayMealsWith4MealDays = [] as DayMeals[]
 
-  const eligible4DishVegRecipes = vegRecipes.filter(
-    (_) => (_.fillingLevel || 3) > 1
-  )
+  // const eligible4DishVegRecipes = vegRecipes.filter(
+  //   (_) => (_.fillingLevel || 3) > 1
+  // // )
 
-  possibleDayMeals.forEach((meals) => {
-    const fillingScoreSum = sumBy(meals.recipes, (_) => _.fillingLevel || 3)
-    if (fillingScoreSum < minFillingLevel) {
-      const recipesToAdd = [...nonVegRecipes, ...eligible4DishVegRecipes]
-      recipesToAdd.forEach((recipe) => {
-        allDayMealsWith4MealDays.push({
-          recipes: [
-            ...meals.recipes,
-            { ...recipe, usedOn: currentDayTimestamp },
-          ],
-        })
-      })
-    } else {
-      allDayMealsWith4MealDays.push(meals)
-    }
-  })
+  // possibleDayMeals.forEach((meals) => {
+  //   const fillingScoreSum = sumBy(meals.recipes, (_) => _.fillingLevel || 3)
+  //   if (fillingScoreSum < minFillingLevel) {
+  //     const recipesToAdd = [...nonVegRecipes, ...eligible4DishVegRecipes]
+  //     recipesToAdd.forEach((recipe) => {
+  //       allDayMealsWith4MealDays.push({
+  //         ignored: false,
+  //         recipes: [
+  //           ...meals.recipes,
+  //           { ...recipe, usedOn: currentDayTimestamp },
+  //         ],
+  //       })
+  //     })
+  //   } else {
+  //     allDayMealsWith4MealDays.push(meals)
+  //   }
+  // })
 
-  return allDayMealsWith4MealDays
+  return possibleDayMeals
 }
 
 const getLastUsedFromPath = (path: DayMeals[]) => {
@@ -246,6 +249,12 @@ const scoreFillingLevel = (dayMeals: DayMeals) => {
     : 0
 }
 
+const scoreGaifan = (dayMeals: DayMeals) => {
+  return dayMeals.recipes.some((_) => _.tags?.includes(RecipeTag.Gaifan))
+    ? 1
+    : 0
+}
+
 const scoreRatings = (dayMeals: DayMeals) => {
   const dgClear = dayMeals.recipes.some((_) => (_.dgScore || 3) > 2)
   const xqClear = dayMeals.recipes.some((_) => (_.xqScore || 3) > 2)
@@ -292,6 +301,7 @@ export const scoreDayMeals = (
     scoreVegMeatBalance,
     scoreNumberOfRecipes,
     scoreFillingLevel,
+    scoreGaifan,
   })(dayMeals)
 }
 

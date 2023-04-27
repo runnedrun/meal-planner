@@ -7,6 +7,7 @@ export enum RecipeTag {
   Eastern = "eastern",
   Fast = "fast",
   Special = "special",
+  Gaifan = "gaifan",
 }
 
 // these tags are ONLY allowed on the day that contains them, but

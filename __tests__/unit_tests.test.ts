@@ -11,6 +11,7 @@ import { maxBy } from "lodash-es"
 
 describe("score as expected", () => {
   it("should score ingredient recency", () => {
+    const startsOn = 1000
     const dayMealsWithDupIngredient = [
       {
         recipes: [

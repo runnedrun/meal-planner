@@ -51,6 +51,7 @@ export enum I {
   eggplant = "egg plant",
   heimoer = "heimoer",
   sweetPotato = "sweet potato",
+  radish = "radish",
 
   // salad
   salad = "salad",
@@ -75,11 +76,15 @@ export enum I {
   peaPasta = "pea pasta",
   lentilSpaghetti = "lentil spaghetti",
   morrocanSauce = "morrocan sauce",
+  coconutMilk = "cocunut milk",
+  chiliVerdeSauce = "chile verde sauce",
 
   // fun
   pizzaCheese = "pizza cheese",
   mozarella = "mozarella",
   coconutWater = "cocunut water",
+  tortillas = "tortillas",
+  mexicanCheese = "mexican cheese",
 
   //stock
   suancaiyuSauce = "suancaiyu sauce",
@@ -109,6 +114,7 @@ export const migrosOrder = [
   I.tofu,
   I.salad,
   I.olives,
+  I.butternutSquash,
 
   //veg
   I.avocado,
@@ -122,6 +128,7 @@ export const migrosOrder = [
   I.flatBeans,
   I.springOnions,
   I.celery,
+  I.radish,
   I.potatoes,
   I.bigTomatoes,
   I.spinach,
@@ -144,6 +151,7 @@ export const migrosOrder = [
   I.chickenWings,
   I.ham,
   I.bacon,
+  I.hamHock,
 
   // dairy
   I.coconutYog,
@@ -151,6 +159,7 @@ export const migrosOrder = [
   I.eggs,
   I.mozarella,
   I.pizzaCheese,
+  I.mexicanCheese,
 
   // third
   I.cranberries,
@@ -169,15 +178,17 @@ export const migrosOrder = [
   I.cannedCorn,
   I.cannedTomatoes,
   I.coke,
+  I.coconutMilk,
   I.driedPeas,
   I.pineapple,
   I.lentils,
   I.cannedBeans,
-  I.japaneseCurryRoux,
   I.tomatoPaste,
   I.peaPasta,
   I.morrocanSauce,
   I.coconutWater,
+  I.chiliVerdeSauce,
+  I.tortillas,
 ]
 
 export const chineseSupermarketItems = [
