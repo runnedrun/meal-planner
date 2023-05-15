@@ -164,13 +164,6 @@ export const recipes: Recipe[] = [
     ingredients: [I.greenBeans, I.groundPork, I.zhacai],
   },
   {
-    uid: "14" as ForeignKey<"recipe">,
-    name: "pork strips and mushrooms with oyster+soy",
-    fillingLevel: 3,
-    tags: [RecipeTag.Eastern, RecipeTag.Gaifan],
-    ingredients: [I.porkStrips, I.mushrooms],
-  },
-  {
     uid: "15" as ForeignKey<"recipe">,
     name: "pork strips and onions with oyster+soy",
     fillingLevel: 3,
@@ -608,6 +601,10 @@ export const recipes: Recipe[] = [
   {
     uid: "54" as ForeignKey<"recipe">,
     name: "Braised Pork Knuckle",
+    notes: `
+      Create the sauce with anise, dark soy, light soy, some water, sugar, ginger and shaoxingjiu. 
+      Cook for 55 minutes at high pressure, natural release. Then slice and put back in the sauce for an hour, then remove.
+    `,
     fillingLevel: 3,
     tags: [RecipeTag.Eastern],
     ingredients: [I.porkHock],
@@ -620,7 +617,7 @@ export const recipes: Recipe[] = [
     ingredients: [I.mussels],
   },
   {
-    uid: "55" as ForeignKey<"recipe">,
+    uid: "56" as ForeignKey<"recipe">,
     name: "Pork Chili verde with tortillas",
     fillingLevel: 5,
     tags: [RecipeTag.Western],

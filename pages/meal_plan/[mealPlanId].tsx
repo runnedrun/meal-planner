@@ -1,10 +1,25 @@
+import { buildRecipeSelector } from "@/components/editable/buildRecipeSelector"
+import { setters } from "@/data/fb"
 import { docForKey } from "@/data/firebaseObsBuilders/docForKey"
-import { filtered } from "@/data/paramObsBuilders/filtered"
 import { stringParam } from "@/data/paramObsBuilders/stringParam"
+import {
+  butcher,
+  chineseSupermarketItems,
+  I,
+  migrosOrder,
+} from "@/data/types/Ingredients"
 import { DayMeals, MealPlan } from "@/data/types/MealPlan"
 import { Recipe } from "@/data/types/Recipe"
 import { buildPrefetchHandler } from "@/views/view_builder/buildPrefetchHandler"
 import { component } from "@/views/view_builder/component"
+import {
+  Cancel,
+  CancelOutlined,
+  Close,
+  ReplayCircleFilled,
+  Undo,
+} from "@mui/icons-material"
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore"
 import {
   Accordion,
   AccordionDetails,
@@ -13,30 +28,10 @@ import {
   IconButton,
   TextField,
 } from "@mui/material"
-import moment from "moment"
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore"
-import { Timestamp } from "firebase/firestore"
-import {
-  Cancel,
-  Close,
-  Remove,
-  ReplayCircleFilled,
-  Undo,
-} from "@mui/icons-material"
-import { ReactComponentElement, useState } from "react"
-import { buildRecipeSelector } from "@/components/editable/buildRecipeSelector"
-import { setters } from "@/data/fb"
-import { prop } from "@/data/paramObsBuilders/prop"
-import {
-  butcher,
-  chineseSupermarketItems,
-  I,
-  migrosOrder,
-} from "@/data/types/Ingredients"
+import { arrayRemove, Timestamp } from "firebase/firestore"
 import { clone, sortBy } from "lodash-es"
-import { CopyToClipboard } from "react-copy-to-clipboard"
-import { ReplyIcon } from "@heroicons/react/solid"
-import { EditableComponent } from "@/data/fieldDisplayComponents/fieldDisplayComponentsBuilders"
+import moment from "moment"
+import { useState } from "react"
 
 const dataFn = () => {
   return {
@@ -69,7 +64,7 @@ const getAndSortForStore = (storeItemsList: I[], allRecipeIngredients: I[]) => {
 }
 
 const ShoppingListDisplay = ({ recipes }: { recipes: Recipe[] }) => {
-  const allIngredients = recipes.flatMap((_) => _.ingredients)
+  const allIngredients = recipes.filter(Boolean).flatMap((_) => _.ingredients)
   const migrosIngredients = getAndSortForStore(migrosOrder, allIngredients)
   const butcherIngredients = getAndSortForStore(butcher, allIngredients)
   const chineseIngredients = getAndSortForStore(
@@ -136,11 +131,17 @@ const RecipeDisplay = ({
       <div className="flex max-w-md flex-col gap-2">
         <div className="flex justify-between">
           <div className="text-lg font-extrabold">{recipe.name}</div>
-          <div>
+          <div className="flex gap-2">
             <ReplayCircleFilled
               onClick={() => setIsReplacing(true)}
               fontSize="small"
+              className="cursor-pointer"
             ></ReplayCircleFilled>
+            <CancelOutlined
+              className="cursor-pointer"
+              onClick={() => replace(null)}
+              fontSize="small"
+            ></CancelOutlined>
           </div>
         </div>
         <Accordion>
@@ -207,10 +208,12 @@ const DayMealsDisplay = ({
   const buildGetNewDaysForPlan =
     (recipeIndex: number) => (newRecipe: Recipe) => {
       const days = clone(thisMealPlan.days)
-      days[dayIndex].recipes[recipeIndex] = {
-        ...newRecipe,
-        usedOn: Timestamp.fromMillis(dayStartMs),
-      }
+      days[dayIndex].recipes[recipeIndex] = newRecipe
+        ? {
+            ...newRecipe,
+            usedOn: Timestamp.fromMillis(dayStartMs),
+          }
+        : null
       return days
     }
   const buildReplaceFn = (recipeIndex: number) => (newRecipe: Recipe) => {
@@ -242,6 +245,10 @@ const DayMealsDisplay = ({
       </div>
       <div className="flex flex-col gap-5">
         {dayMeals.recipes.map((recipe, index) => {
+          if (!recipe) {
+            return <span key={index} className="hidden"></span>
+          }
+
           const RecipeSelector = buildRecipeSelector(
             buildGetNewDaysForPlan(index),
             thisMealPlan.startOn.toMillis()
@@ -305,7 +312,8 @@ const MealPlanDisplay = component(dataFn, ({ mealPlan }) => {
   let copyableMealPlan = ""
   mealPlan.days.forEach((day, i) => {
     copyableMealPlan += `\n<div>Day ${i}</div><ul>`
-    day.recipes.forEach((recipe) => {
+    day.recipes.filter(Boolean).forEach((recipe) => {
+      console.log("reicpes", recipe)
       copyableMealPlan += `<li><div>${recipe.name}</div><ul>`
       if (recipe.notes) {
         copyableMealPlan += `<li><ul><li>${recipe.notes}</li></ul></li>`

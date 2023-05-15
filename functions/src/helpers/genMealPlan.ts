@@ -24,15 +24,20 @@ export const generateAllPossibleDayMeals = (
 ) => {
   const dayOfWeekIndex = moment(currentDayTimestamp.toMillis()).day()
   const dayTags = DayTags[dayOfWeekIndex]?.tags || []
-  const recipesWithRequiredTags = possibleRecipes.filter((recipe) => {
-    const recipeHasAllTags = dayTags.every(
-      (tag) => recipe.tags?.includes(tag) || exclusiveOptionalTags.includes(tag)
-    )
-    const recipeDoesntHaveAnyExcludedTags = exclusiveOptionalTags.every((_) => {
-      return !recipe.tags?.includes(_) || dayTags.includes(_)
+  const recipesWithRequiredTags = possibleRecipes
+    .filter(Boolean)
+    .filter((recipe) => {
+      const recipeHasAllTags = dayTags.every(
+        (tag) =>
+          recipe.tags?.includes(tag) || exclusiveOptionalTags.includes(tag)
+      )
+      const recipeDoesntHaveAnyExcludedTags = exclusiveOptionalTags.every(
+        (_) => {
+          return !recipe.tags?.includes(_) || dayTags.includes(_)
+        }
+      )
+      return recipeHasAllTags && recipeDoesntHaveAnyExcludedTags
     })
-    return recipeHasAllTags && recipeDoesntHaveAnyExcludedTags
-  })
   const [standalone, nonStandalone] = partition(
     recipesWithRequiredTags,
     (_) => _.fillingLevel === 10
@@ -51,16 +56,18 @@ export const generateAllPossibleDayMeals = (
   const nonVegRecipes = nonStandalone.filter((_) => !_.veg)
   const possibleDayMeals = [...standaloneDayMeals] as DayMeals[]
 
-  const allPossibleMeatCombos = nonVegRecipes.flatMap((first, i) =>
-    nonVegRecipes
-      .slice(i + 1)
-      .map((second) => [
-        { ...first, usedOn: currentDayTimestamp } as MealPlanRecipe,
-        { ...second, usedOn: currentDayTimestamp } as MealPlanRecipe,
-      ])
-  )
+  const allPossibleMeatCombos = nonVegRecipes
+    .filter(Boolean)
+    .flatMap((first, i) =>
+      nonVegRecipes
+        .slice(i + 1)
+        .map((second) => [
+          { ...first, usedOn: currentDayTimestamp } as MealPlanRecipe,
+          { ...second, usedOn: currentDayTimestamp } as MealPlanRecipe,
+        ])
+    )
 
-  vegRecipes.forEach((thisVegRecipe) => {
+  vegRecipes.filter(Boolean).forEach((thisVegRecipe) => {
     allPossibleMeatCombos.forEach((thisMeatCombo) => {
       possibleDayMeals.push({
         ignored: false,
@@ -74,7 +81,7 @@ export const generateAllPossibleDayMeals = (
 
   // const allDayMealsWith4MealDays = [] as DayMeals[]
 
-  // const eligible4DishVegRecipes = vegRecipes.filter(
+  // const eligible4DishVegRecipes = vegRecipes.filter(Boolean).filter(
   //   (_) => (_.fillingLevel || 3) > 1
   // // )
 
@@ -101,10 +108,13 @@ export const generateAllPossibleDayMeals = (
 
 const getLastUsedFromPath = (path: DayMeals[]) => {
   return path.reduce((acc, dayMeal) => {
-    dayMeal.recipes.map((recipe) => {
-      acc[recipe.uid] = acc[recipe.uid] || []
-      acc[recipe.uid].push(recipe.usedOn.toMillis())
-    })
+    dayMeal.recipes
+      .filter(Boolean)
+      .filter(Boolean)
+      .map((recipe) => {
+        acc[recipe.uid] = acc[recipe.uid] || []
+        acc[recipe.uid].push(recipe.usedOn.toMillis())
+      })
     return acc
   }, {} as Record<string, number[]>)
 }
@@ -113,14 +123,17 @@ const getIngredientLastUsedFromPathAndAllRecipes = (path: DayMeals[]) => {
   const acc = {} as Record<I, number[]>
 
   path.forEach((dayMeal) => {
-    dayMeal.recipes.forEach((recipe) => {
-      recipe.ingredients.map((ingredient) => {
-        if (discourageDuplicationFor.includes(ingredient)) {
-          acc[ingredient] = acc[ingredient] || []
-          acc[ingredient].push(recipe.usedOn.toMillis())
-        }
+    dayMeal.recipes
+      .filter(Boolean)
+      .filter(Boolean)
+      .forEach((recipe) => {
+        recipe.ingredients.map((ingredient) => {
+          if (discourageDuplicationFor.includes(ingredient)) {
+            acc[ingredient] = acc[ingredient] || []
+            acc[ingredient].push(recipe.usedOn.toMillis())
+          }
+        })
       })
-    })
   })
   return acc
 }
@@ -153,15 +166,15 @@ const scoreRecency = (
 ) => {
   const recipeIdsToLastUsedMs = getLastUsedFromPath(pathUntilYesterday)
 
-  const lastUsedAts = dayMeal.recipes.map((_) =>
-    getLastUsedForRecipe(_, recipeIdsToLastUsedMs)
-  )
+  const lastUsedAts = dayMeal.recipes
+    .filter(Boolean)
+    .map((_) => getLastUsedForRecipe(_, recipeIdsToLastUsedMs))
 
   const recencyScore = lastUsedAts.reduce((acc, recipeLastUsed) => {
     return acc + Math.log(dayStartMs - recipeLastUsed + 1)
   }, 0)
 
-  const avgRecencyScore = recencyScore / dayMeal.recipes.length
+  const avgRecencyScore = recencyScore / dayMeal.recipes.filter(Boolean).length
 
   return avgRecencyScore / 3
 }
@@ -174,8 +187,9 @@ export const getIngredientRecencyScoreForDayMeal = (
   const lastUsedByIngredient =
     getIngredientLastUsedFromPathAndAllRecipes(pathUpUntilToday)
 
-  const dupIngredientDetractionScore = dayMeals.recipes.reduce(
-    (acc, recipe) => {
+  const dupIngredientDetractionScore = dayMeals.recipes
+    .filter(Boolean)
+    .reduce((acc, recipe) => {
       const lastUsedForIngredientsWeDontWantToDup = recipe.ingredients
         .map((ingredient) => {
           const lastUsed = getMostRecentIngredientLastUsed(
@@ -197,17 +211,18 @@ export const getIngredientRecencyScoreForDayMeal = (
           : -1
 
       return acc + averageIngredientScore
-    },
-    0
-  )
+    }, 0)
 
   return (-1 * dupIngredientDetractionScore) / 10
 }
 
 const scoreSpecialTags = (dayMeals: DayMeals) => {
-  return dayMeals.recipes.some((recipe) => {
-    return recipe.tags?.includes(RecipeTag.Special)
-  })
+  return dayMeals.recipes
+    .filter(Boolean)
+    .filter(Boolean)
+    .some((recipe) => {
+      return recipe.tags?.includes(RecipeTag.Special)
+    })
     ? 2
     : 0
 }
@@ -226,38 +241,46 @@ export const getAverageScoreForPath = (
 // score if all the meals for a day are eastern or western.
 
 const scoreTypeConsistency = (dayMeals: DayMeals) => {
-  const allNotEastern = dayMeals.recipes.every(
-    (_) => !_.tags?.includes(RecipeTag.Eastern)
-  )
-  const allEastern = dayMeals.recipes.every((_) =>
-    _.tags?.includes(RecipeTag.Eastern)
-  )
+  const allNotEastern = dayMeals.recipes
+    .filter(Boolean)
+    .filter(Boolean)
+    .every((_) => !_.tags?.includes(RecipeTag.Eastern))
+  const allEastern = dayMeals.recipes
+    .filter(Boolean)
+    .every((_) => _.tags?.includes(RecipeTag.Eastern))
   return allNotEastern || allEastern ? 4 : 0
 }
 
 const scoreVegMeatBalance = (dayMeals: DayMeals) => {
-  return dayMeals.recipes.some((_) => _.veg) ? 5 : 0
+  return dayMeals.recipes.filter(Boolean).some((_) => _.veg) ? 5 : 0
 }
 
 const scoreNumberOfRecipes = (dayMeals: DayMeals) => {
-  return dayMeals.recipes.length > 3 ? -1 : 0
+  return dayMeals.recipes.filter(Boolean).length > 3 ? -1 : 0
 }
 
 const scoreFillingLevel = (dayMeals: DayMeals) => {
-  return sumBy(dayMeals.recipes, (_) => _.fillingLevel || 3) < minFillingLevel
+  return sumBy(dayMeals.recipes.filter(Boolean), (_) => _.fillingLevel || 3) <
+    minFillingLevel
     ? -5
     : 0
 }
 
 const scoreGaifan = (dayMeals: DayMeals) => {
-  return dayMeals.recipes.some((_) => _.tags?.includes(RecipeTag.Gaifan))
+  return dayMeals.recipes
+    .filter(Boolean)
+    .some((_) => _.tags?.includes(RecipeTag.Gaifan))
     ? 1
     : 0
 }
 
 const scoreRatings = (dayMeals: DayMeals) => {
-  const dgClear = dayMeals.recipes.some((_) => (_.dgScore || 3) > 2)
-  const xqClear = dayMeals.recipes.some((_) => (_.xqScore || 3) > 2)
+  const dgClear = dayMeals.recipes
+    .filter(Boolean)
+    .some((_) => (_.dgScore || 3) > 2)
+  const xqClear = dayMeals.recipes
+    .filter(Boolean)
+    .some((_) => (_.xqScore || 3) > 2)
   return dgClear && xqClear ? 0 : -2
 }
 
