@@ -64,7 +64,10 @@ const getAndSortForStore = (storeItemsList: I[], allRecipeIngredients: I[]) => {
 }
 
 const ShoppingListDisplay = ({ recipes }: { recipes: Recipe[] }) => {
-  const allIngredients = recipes.filter(Boolean).flatMap((_) => _.ingredients)
+  const allIngredients = recipes
+    .filter(Boolean)
+    .filter((_) => !_.archived)
+    .flatMap((_) => _.ingredients)
   const migrosIngredients = getAndSortForStore(migrosOrder, allIngredients)
   const butcherIngredients = getAndSortForStore(butcher, allIngredients)
   const chineseIngredients = getAndSortForStore(
@@ -310,22 +313,24 @@ const AllDayMealsDisplay = ({ thisMealPlan }: { thisMealPlan: MealPlan }) => {
 
 const MealPlanDisplay = component(dataFn, ({ mealPlan }) => {
   let copyableMealPlan = ""
-  mealPlan.days.forEach((day, i) => {
-    copyableMealPlan += `\n<div>Day ${i}</div><ul>`
-    day.recipes.filter(Boolean).forEach((recipe) => {
-      console.log("reicpes", recipe)
-      copyableMealPlan += `<li><div>${recipe.name}</div><ul>`
-      if (recipe.notes) {
-        copyableMealPlan += `<li><ul><li>${recipe.notes}</li></ul></li>`
-      }
+  mealPlan.days
+    .filter((_) => !_.ignored)
+    .forEach((day, i) => {
+      copyableMealPlan += `\n<div>Day ${i}</div><ul>`
+      day.recipes.filter(Boolean).forEach((recipe) => {
+        console.log("reicpes", recipe)
+        copyableMealPlan += `<li><div>${recipe.name}</div><ul>`
+        if (recipe.notes) {
+          copyableMealPlan += `<li><ul><li>${recipe.notes}</li></ul></li>`
+        }
 
-      recipe.ingredients.forEach((ingredient) => {
-        copyableMealPlan += `<li>${ingredient}</li>`
+        recipe.ingredients.forEach((ingredient) => {
+          copyableMealPlan += `<li>${ingredient}</li>`
+        })
+        copyableMealPlan += `</ul>`
       })
       copyableMealPlan += `</ul>`
     })
-    copyableMealPlan += `</ul>`
-  })
 
   return (
     <div className="flex w-full justify-center">
@@ -370,7 +375,9 @@ const MealPlanDisplay = component(dataFn, ({ mealPlan }) => {
             </AccordionSummary>
             <AccordionDetails>
               <ShoppingListDisplay
-                recipes={mealPlan.days.flatMap((day) => day.recipes)}
+                recipes={mealPlan.days
+                  .filter((_) => !_.ignored)
+                  .flatMap((day) => day.recipes)}
               ></ShoppingListDisplay>
             </AccordionDetails>
           </Accordion>

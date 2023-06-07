@@ -273,6 +273,7 @@ export const recipes: Recipe[] = [
     tags: [RecipeTag.Western, RecipeTag.Fast, RecipeTag.Gaifan],
     ingredients: [
       I.chickenChunks,
+      I.chorizo,
       I.onion,
       I.coconutYog,
       I.pineapple,
